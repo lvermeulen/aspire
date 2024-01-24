@@ -183,26 +183,31 @@ internal sealed class ApplicationExecutor(ILogger<ApplicationExecutor> logger,
 
         var client = new HttpClient();
 
-        while (!cancellationToken.IsCancellationRequested)
+        try
         {
-            try
+            while (true)
             {
-                var response = await client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
-
-                if (response.IsSuccessStatusCode)
+                try
                 {
-                    return;
+                    var response = await client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead, cts.Token).ConfigureAwait(false);
+                    response.EnsureSuccessStatusCode();
+                    if (response.IsSuccessStatusCode)
+                    {
+                        return;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogDebug(ex, "Dashboard not ready yet.");
+                    await Task.Delay(TimeSpan.FromMilliseconds(50), cts.Token).ConfigureAwait(false);
                 }
             }
-            catch (Exception ex)
-            {
-                _logger.LogDebug(ex, "Dashboard not ready yet.");
-            }
-
-            await Task.Delay(TimeSpan.FromMilliseconds(50), cancellationToken).ConfigureAwait(false);
         }
-
-        throw new DistributedApplicationException("Timed out waiting for dashboard to be responsive.");
+        catch (TaskCanceledException ex)
+        {
+            // If the task is cancelled during the above Task.Delay(...) we need to catch and throw here.
+            throw new DistributedApplicationException("Timed out waiting for dashboard to be responsive.", ex);
+        }
     }
 
     public async Task StopApplicationAsync(CancellationToken cancellationToken = default)
