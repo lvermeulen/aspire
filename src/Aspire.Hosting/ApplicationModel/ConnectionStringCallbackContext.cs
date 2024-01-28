@@ -3,6 +3,7 @@
 
 namespace Aspire.Hosting.ApplicationModel;
 
-public class SecretStoreResource(string name) : Resource(name)
+public sealed class ConnectionStringCallbackContext
 {
+    public string? ConnectionString { get; set; }
 }
