@@ -50,16 +50,15 @@ public static class ParameterResourceBuilderExtensions
     /// <returns>The resource builder for the connection string parameter resource.</returns>
     public static IResourceBuilder<IResourceWithConnectionString> AddConnectionString(this IDistributedApplicationBuilder builder, string name)
     {
-        var resource = new ParameterResource(name, (context) =>
+        var parameterBuilder = builder.AddParameter(name, (context) =>
         {
             context.Value = builder.Configuration.GetConnectionString(name) ?? throw new DistributedApplicationException($"Connection string parameter resource could not be used because configuration key `ConnectionStrings:{name}` is missing.");
         }, secret: true);
 
-        builder.AddResource(resource); // Discard the builder because we'll return a surrogate.
-        var surrogate = new ResourceWithConnectionStringSurrogate(resource, (context) =>
+        var surrogate = new ResourceWithConnectionStringSurrogate(parameterBuilder.Resource, (context) =>
         {
             var parameterValueCallbackContext = new ParameterValueCallbackContext(context.ExecutionContext);
-            resource.ApplyValue(parameterValueCallbackContext);
+            parameterBuilder.Resource.ApplyValue(parameterValueCallbackContext);
             context.ConnectionString = parameterValueCallbackContext.Value;
         });
 
