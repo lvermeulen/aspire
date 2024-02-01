@@ -21,5 +21,5 @@ public class AzureBlobStorageResource(string name, AzureStorageResource storage)
     /// Gets the connection string for the Azure Blob Storage resource.
     /// </summary>
     /// <returns>The connection string for the Azure Blob Storage resource.</returns>
-    public void EvaluateConnectionString(ConnectionStringCallbackContext context) => context.ConnectionString = Parent.GetBlobConnectionString();
+    public void ApplyConnectionString(ConnectionStringCallbackContext context) => context.ConnectionString = Parent.GetBlobConnectionString();
 }

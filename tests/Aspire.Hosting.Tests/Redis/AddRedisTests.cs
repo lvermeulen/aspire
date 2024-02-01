@@ -91,7 +91,7 @@ public class AddRedisTests
 
         var connectionStringResource = Assert.Single(appModel.Resources.OfType<IResourceWithConnectionString>());
         var connectionStringResourceContext = new ConnectionStringCallbackContext(appBuilder.ExecutionContext);
-        connectionStringResource.EvaluateConnectionString(connectionStringResourceContext);
+        connectionStringResource.ApplyConnectionString(connectionStringResourceContext);
         Assert.StartsWith("localhost:2000", connectionStringResourceContext.ConnectionString);
     }
 

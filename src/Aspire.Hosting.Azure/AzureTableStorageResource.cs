@@ -21,5 +21,5 @@ public class AzureTableStorageResource(string name, AzureStorageResource storage
     /// Gets the connection string for the Azure Table Storage resource.
     /// </summary>
     /// <returns>The connection string for the Azure Table Storage resource.</returns>
-    public void EvaluateConnectionString(ConnectionStringCallbackContext context) => context.ConnectionString = Parent.GetTableConnectionString();
+    public void ApplyConnectionString(ConnectionStringCallbackContext context) => context.ConnectionString = Parent.GetTableConnectionString();
 }

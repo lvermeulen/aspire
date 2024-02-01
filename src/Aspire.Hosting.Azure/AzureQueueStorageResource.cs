@@ -21,5 +21,5 @@ public class AzureQueueStorageResource(string name, AzureStorageResource storage
     /// Gets the connection string for the Azure Queue Storage resource.
     /// </summary>
     /// <returns>The connection string for the Azure Queue Storage resource.</returns>
-    public void EvaluateConnectionString(ConnectionStringCallbackContext context) => context.ConnectionString = Parent.GetQueueConnectionString();
+    public void ApplyConnectionString(ConnectionStringCallbackContext context) => context.ConnectionString = Parent.GetQueueConnectionString();
 }

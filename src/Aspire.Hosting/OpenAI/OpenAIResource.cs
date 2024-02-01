@@ -18,7 +18,7 @@ public class OpenAIResource(string name) : Resource(name), IResourceWithConnecti
     /// Gets the connection string for the OpenAI service.
     /// </summary>
     /// <returns>The connection string for the OpenAI service.</returns>
-    void IResourceWithConnectionString.EvaluateConnectionString(ConnectionStringCallbackContext context)
+    void IResourceWithConnectionString.ApplyConnectionString(ConnectionStringCallbackContext context)
     {
         context.ConnectionString = ConnectionString;
     }

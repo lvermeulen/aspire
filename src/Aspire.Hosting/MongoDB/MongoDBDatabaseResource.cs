@@ -17,9 +17,9 @@ public class MongoDBDatabaseResource(string name, IMongoDBParentResource mongoDB
     /// Gets the connection string for the MongoDB database.
     /// </summary>
     /// <returns>A connection string for the MongoDB database.</returns>
-    public void EvaluateConnectionString(ConnectionStringCallbackContext context)
+    public void ApplyConnectionString(ConnectionStringCallbackContext context)
     {
-        Parent.EvaluateConnectionString(context);
+        Parent.ApplyConnectionString(context);
 
         if (context.ConnectionString is { } connectionString)
         {

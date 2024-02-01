@@ -19,7 +19,7 @@ public class RabbitMQContainerResource(string name, string password) : Container
     /// Gets the connection string for the RabbitMQ server.
     /// </summary>
     /// <returns>A connection string for the RabbitMQ server in the form "amqp://user:password@host:port".</returns>
-    public void EvaluateConnectionString(ConnectionStringCallbackContext context)
+    public void ApplyConnectionString(ConnectionStringCallbackContext context)
     {
         if (!this.TryGetAllocatedEndPoints(out var allocatedEndpoints))
         {

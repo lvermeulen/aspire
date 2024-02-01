@@ -15,7 +15,7 @@ public class KafkaContainerResource(string name) : ContainerResource(name), IRes
     /// Gets the connection string for Kafka broker.
     /// </summary>
     /// <returns>A connection string for the Kafka in the form "host:port" to be passed as <see href="https://docs.confluent.io/platform/current/clients/confluent-kafka-dotnet/_site/api/Confluent.Kafka.ClientConfig.html#Confluent_Kafka_ClientConfig_BootstrapServers">BootstrapServers</see>.</returns>
-    public void EvaluateConnectionString(ConnectionStringCallbackContext context)
+    public void ApplyConnectionString(ConnectionStringCallbackContext context)
     {
         if (!this.TryGetAllocatedEndPoints(out var allocatedEndpoints))
         {

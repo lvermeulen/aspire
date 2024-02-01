@@ -18,5 +18,5 @@ public class AzureKeyVaultResource(string name) : Resource(name), IAzureResource
     /// Gets the connection string for the Azure Key Vault resource.
     /// </summary>
     /// <returns>The connection string for the Azure Key Vault resource.</returns>
-    public void EvaluateConnectionString(ConnectionStringCallbackContext context) => context.ConnectionString = VaultUri?.ToString();
+    public void ApplyConnectionString(ConnectionStringCallbackContext context) => context.ConnectionString = VaultUri?.ToString();
 }

@@ -18,7 +18,7 @@ public class OracleDatabaseContainerResource(string name, string password) : Con
     /// Gets the connection string for the Oracle Database server.
     /// </summary>
     /// <returns>A connection string for the Oracle Database server in the form "user id=system;password=password;data source=localhost:port".</returns>
-    public void EvaluateConnectionString(ConnectionStringCallbackContext context)
+    public void ApplyConnectionString(ConnectionStringCallbackContext context)
     {
         if (!this.TryGetAllocatedEndPoints(out var allocatedEndpoints))
         {

@@ -35,7 +35,7 @@ public class AzureSqlDatabaseResource : Resource,
     /// Gets the connection string for the Azure SQL Database resource.
     /// </summary>
     /// <returns>The connection string for the Azure SQL Database resource.</returns>
-    public void EvaluateConnectionString(ConnectionStringCallbackContext context)
+    public void ApplyConnectionString(ConnectionStringCallbackContext context)
     {
         if (ConnectionString == null)
         {

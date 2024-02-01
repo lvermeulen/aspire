@@ -26,11 +26,11 @@ public class AzureCosmosDBDatabaseResource : Resource, IResourceWithConnectionSt
     /// Gets the connection string to use for this database.
     /// </summary>
     /// <returns>The connection string to use for this database.</returns>
-    public void EvaluateConnectionString(ConnectionStringCallbackContext context)
+    public void ApplyConnectionString(ConnectionStringCallbackContext context)
     {
         if (ConnectionString == null)
         {
-            Parent.EvaluateConnectionString(context);
+            Parent.ApplyConnectionString(context);
         }
         else
         {

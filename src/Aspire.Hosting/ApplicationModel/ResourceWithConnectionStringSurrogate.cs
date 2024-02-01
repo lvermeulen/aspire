@@ -9,5 +9,5 @@ internal sealed class ResourceWithConnectionStringSurrogate(IResource innerResou
 
     public ResourceMetadataCollection Annotations => innerResource.Annotations;
 
-    public void EvaluateConnectionString(ConnectionStringCallbackContext context) => callback(context);
+    public void ApplyConnectionString(ConnectionStringCallbackContext context) => callback(context);
 }

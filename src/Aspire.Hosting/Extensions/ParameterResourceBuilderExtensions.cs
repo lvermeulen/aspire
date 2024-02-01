@@ -59,7 +59,7 @@ public static class ParameterResourceBuilderExtensions
         var surrogate = new ResourceWithConnectionStringSurrogate(resource, (context) =>
         {
             var parameterValueCallbackContext = new ParameterValueCallbackContext(context.ExecutionContext);
-            resource.EvaluateValue(parameterValueCallbackContext);
+            resource.ApplyValue(parameterValueCallbackContext);
             context.ConnectionString = parameterValueCallbackContext.Value;
         });
 

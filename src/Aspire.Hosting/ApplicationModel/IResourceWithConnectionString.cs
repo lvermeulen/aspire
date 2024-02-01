@@ -12,5 +12,5 @@ public interface IResourceWithConnectionString : IResource
     /// Gets the connection string associated with the resource.
     /// </summary>
     /// <returns>The connection string associated with the resource, when one is available.</returns>
-    public void EvaluateConnectionString(ConnectionStringCallbackContext context);
+    public void ApplyConnectionString(ConnectionStringCallbackContext context);
 }

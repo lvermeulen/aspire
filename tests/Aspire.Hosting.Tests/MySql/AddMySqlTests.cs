@@ -124,7 +124,7 @@ public class AddMySqlTests
 
         var connectionStringResource = Assert.Single(appModel.Resources.OfType<IResourceWithConnectionString>());
         var connectionStringResourceContext = new ConnectionStringCallbackContext(appBuilder.ExecutionContext);
-        connectionStringResource.EvaluateConnectionString(connectionStringResourceContext);
+        connectionStringResource.ApplyConnectionString(connectionStringResourceContext);
         Assert.StartsWith("Server=localhost;Port=2000;User ID=root;Password=", connectionStringResourceContext.ConnectionString);
         Assert.EndsWith(";", connectionStringResourceContext.ConnectionString);
     }
@@ -149,11 +149,11 @@ public class AddMySqlTests
 
         var mySqlResource = Assert.Single(appModel.Resources.OfType<MySqlContainerResource>());
         var mySqlResourceContext = new ConnectionStringCallbackContext(appBuilder.ExecutionContext);
-        mySqlResource.EvaluateConnectionString(mySqlResourceContext);
+        mySqlResource.ApplyConnectionString(mySqlResourceContext);
 
         var mySqlDatabaseResource = Assert.Single(appModel.Resources.OfType<MySqlDatabaseResource>());
         var mySqlDatabaseResourceContext = new ConnectionStringCallbackContext(appBuilder.ExecutionContext);
-        mySqlDatabaseResource.EvaluateConnectionString(mySqlDatabaseResourceContext);
+        mySqlDatabaseResource.ApplyConnectionString(mySqlDatabaseResourceContext);
 
         Assert.EndsWith(";", mySqlDatabaseResourceContext.ConnectionString);
         Assert.Equal(mySqlDatabaseResourceContext.ConnectionString + "Database=db", mySqlDatabaseResourceContext.ConnectionString);

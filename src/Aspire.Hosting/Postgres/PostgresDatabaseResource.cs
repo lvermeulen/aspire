@@ -16,9 +16,9 @@ public class PostgresDatabaseResource(string name, IPostgresParentResource postg
     /// Gets the connection string for the Postgres database.
     /// </summary>
     /// <returns>A connection string for the Postgres database.</returns>
-    public void EvaluateConnectionString(ConnectionStringCallbackContext context)
+    public void ApplyConnectionString(ConnectionStringCallbackContext context)
     {
-        Parent.EvaluateConnectionString(context);
+        Parent.ApplyConnectionString(context);
         if (context.ConnectionString is { } connectionString)
         {
             context.ConnectionString = $"{connectionString}Database={Name}";

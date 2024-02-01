@@ -20,7 +20,7 @@ public class AzureCosmosDBResource(string name)
     /// Gets the connection string to use for this database.
     /// </summary>
     /// <returns>The connection string to use for this database.</returns>
-    public void EvaluateConnectionString(ConnectionStringCallbackContext context)
+    public void ApplyConnectionString(ConnectionStringCallbackContext context)
     {
         context.ConnectionString = AzureCosmosDBEmulatorConnectionString.Create(GetEmulatorPort("emulator"));
     }

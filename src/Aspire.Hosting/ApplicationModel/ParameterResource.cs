@@ -27,5 +27,5 @@ public sealed class ParameterResource : Resource
     /// </summary>
     public bool Secret { get; }
 
-    internal void EvaluateValue(ParameterValueCallbackContext context) => _callback(context);
+    internal void ApplyValue(ParameterValueCallbackContext context) => _callback(context);
 }

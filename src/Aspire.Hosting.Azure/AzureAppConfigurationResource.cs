@@ -18,5 +18,5 @@ public class AzureAppConfigurationResource(string name) : Resource(name), IAzure
     /// Gets the connection string for the Azure App Configuration resource.
     /// </summary>
     /// <returns>The connection string for the Azure App Configuration resource.</returns>
-    public void EvaluateConnectionString(ConnectionStringCallbackContext context) => context.ConnectionString = Endpoint;
+    public void ApplyConnectionString(ConnectionStringCallbackContext context) => context.ConnectionString = Endpoint;
 }

@@ -131,7 +131,7 @@ public static class ResourceBuilderExtensions
     /// The format of the environment variable will be "ConnectionStrings__{sourceResourceName}={connectionString}."
     /// <para>
     /// Each resource defines the format of the connection string value. The
-    /// underlying connection string value can be retrieved using <see cref="IResourceWithConnectionString.EvaluateConnectionString"/>.
+    /// underlying connection string value can be retrieved using <see cref="IResourceWithConnectionString.ApplyConnectionString"/>.
     /// </para>
     /// <para>
     /// Connection strings are also resolved by the configuration system (appSettings.json in the AppHost project, or environment variables). If a connection string is not found on the resource, the configuration system will be queried for a connection string
@@ -162,7 +162,7 @@ public static class ResourceBuilderExtensions
             }
 
             var connectionStringCallbackContext = new ConnectionStringCallbackContext(builder.ApplicationBuilder.ExecutionContext);
-            resource.EvaluateConnectionString(connectionStringCallbackContext);
+            resource.ApplyConnectionString(connectionStringCallbackContext);
             var connectionString = connectionStringCallbackContext.ConnectionString;
 
             if (string.IsNullOrEmpty(connectionString))

@@ -124,7 +124,7 @@ public class AddOracleDatabaseTests
 
         var connectionStringResource = Assert.Single(appModel.Resources.OfType<IResourceWithConnectionString>());
         var connectionStringResourceContext = new ConnectionStringCallbackContext(appBuilder.ExecutionContext);
-        connectionStringResource.EvaluateConnectionString(connectionStringResourceContext);
+        connectionStringResource.ApplyConnectionString(connectionStringResourceContext);
 
         Assert.StartsWith("user id=system;password=", connectionStringResourceContext.ConnectionString);
         Assert.EndsWith(";data source=localhost:2000", connectionStringResourceContext.ConnectionString);
@@ -150,11 +150,11 @@ public class AddOracleDatabaseTests
 
         var oracleResource = Assert.Single(appModel.Resources.OfType<OracleDatabaseContainerResource>());
         var oracleResourceContext = new ConnectionStringCallbackContext(appBuilder.ExecutionContext);
-        oracleResource.EvaluateConnectionString(oracleResourceContext);
+        oracleResource.ApplyConnectionString(oracleResourceContext);
 
         var oracleDatabaseResource = Assert.Single(appModel.Resources.OfType<OracleDatabaseResource>());
         var oracleDatabaseResourceContext = new ConnectionStringCallbackContext(appBuilder.ExecutionContext);
-        oracleDatabaseResource.EvaluateConnectionString(oracleDatabaseResourceContext);
+        oracleDatabaseResource.ApplyConnectionString(oracleDatabaseResourceContext);
 
         Assert.Equal(oracleResourceContext.ConnectionString + "/db", oracleDatabaseResourceContext.ConnectionString);
     }

@@ -16,9 +16,9 @@ public class OracleDatabaseResource(string name, IOracleDatabaseParentResource o
     /// Gets the connection string for the Oracle Database.
     /// </summary>
     /// <returns>A connection string for the Oracle Database.</returns>
-    public void EvaluateConnectionString(ConnectionStringCallbackContext context)
+    public void ApplyConnectionString(ConnectionStringCallbackContext context)
     {
-        Parent.EvaluateConnectionString(context);
+        Parent.ApplyConnectionString(context);
 
         if (context.ConnectionString is { } connectionString)
         {

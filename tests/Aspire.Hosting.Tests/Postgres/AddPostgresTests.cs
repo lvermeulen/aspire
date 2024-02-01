@@ -146,7 +146,7 @@ public class AddPostgresTests
 
         var connectionStringResource = Assert.Single(appModel.Resources.OfType<IResourceWithConnectionString>());
         var connectionStringResourceContext = new ConnectionStringCallbackContext(appBuilder.ExecutionContext);
-        connectionStringResource.EvaluateConnectionString(connectionStringResourceContext);
+        connectionStringResource.ApplyConnectionString(connectionStringResourceContext);
         Assert.StartsWith("Host=localhost;Port=2000;Username=postgres;Password=", connectionStringResourceContext.ConnectionString);
         Assert.EndsWith(";", connectionStringResourceContext.ConnectionString);
     }
@@ -171,11 +171,11 @@ public class AddPostgresTests
 
         var postgresResource = Assert.Single(appModel.Resources.OfType<PostgresContainerResource>());
         var postgresResourceContext = new ConnectionStringCallbackContext(appBuilder.ExecutionContext);
-        postgresResource.EvaluateConnectionString(postgresResourceContext);
+        postgresResource.ApplyConnectionString(postgresResourceContext);
 
         var postgresDatabaseResource = Assert.Single(appModel.Resources.OfType<PostgresDatabaseResource>());
         var postgresDatabaseResourceContext = new ConnectionStringCallbackContext(appBuilder.ExecutionContext);
-        postgresDatabaseResource.EvaluateConnectionString(postgresDatabaseResourceContext);
+        postgresDatabaseResource.ApplyConnectionString(postgresDatabaseResourceContext);
 
         Assert.EndsWith(";", postgresResourceContext.ConnectionString);
         Assert.Equal(postgresResourceContext.ConnectionString + "Database=db", postgresDatabaseResourceContext.ConnectionString);

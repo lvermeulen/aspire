@@ -420,7 +420,7 @@ public class WithReferenceTests
 
         public ResourceMetadataCollection Annotations => throw new NotImplementedException();
 
-        public void EvaluateConnectionString(ConnectionStringCallbackContext context)
+        public void ApplyConnectionString(ConnectionStringCallbackContext context)
         {
             context.ConnectionString = ConnectionString;
         }

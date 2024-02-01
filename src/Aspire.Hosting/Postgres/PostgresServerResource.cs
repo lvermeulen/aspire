@@ -18,7 +18,7 @@ public class PostgresServerResource(string name, string password) : Resource(nam
     /// Gets the connection string for the PostgreSQL server.
     /// </summary>
     /// <returns>A connection string for the PostgreSQL server in the form "Host=host;Port=port;Username=postgres;Password=password".</returns>
-    public void EvaluateConnectionString(ConnectionStringCallbackContext context)
+    public void ApplyConnectionString(ConnectionStringCallbackContext context)
     {
         if (!this.TryGetAllocatedEndPoints(out var allocatedEndpoints))
         {

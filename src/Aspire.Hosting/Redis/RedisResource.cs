@@ -15,7 +15,7 @@ public class RedisResource(string name) : Resource(name), IResourceWithConnectio
     /// Gets the connection string for the Redis server.
     /// </summary>
     /// <returns>A connection string for the redis server in the form "host:port".</returns>
-    public void EvaluateConnectionString(ConnectionStringCallbackContext context)
+    public void ApplyConnectionString(ConnectionStringCallbackContext context)
     {
         if (!this.TryGetAnnotationsOfType<AllocatedEndpointAnnotation>(out var allocatedEndpoints))
         {

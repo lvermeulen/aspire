@@ -29,5 +29,5 @@ public class AzureServiceBusResource(string name) : Resource(name), IAzureResour
     /// Gets the connection string for the Azure Service Bus endpoint.
     /// </summary>
     /// <returns>The connection string for the Azure Service Bus endpoint.</returns>
-    public void EvaluateConnectionString(ConnectionStringCallbackContext context) => context.ConnectionString = ServiceBusEndpoint;
+    public void ApplyConnectionString(ConnectionStringCallbackContext context) => context.ConnectionString = ServiceBusEndpoint;
 }

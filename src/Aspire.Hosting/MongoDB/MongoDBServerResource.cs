@@ -15,7 +15,7 @@ public class MongoDBServerResource(string name) : Resource(name), IMongoDBParent
     /// Gets the connection string for the MongoDB server.
     /// </summary>
     /// <returns>A connection string for the MongoDB server in the form "mongodb://host:port".</returns>
-    public void EvaluateConnectionString(ConnectionStringCallbackContext context)
+    public void ApplyConnectionString(ConnectionStringCallbackContext context)
     {
         if (!this.TryGetAllocatedEndPoints(out var allocatedEndpoints))
         {
