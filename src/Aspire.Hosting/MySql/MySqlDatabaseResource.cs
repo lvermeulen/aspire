@@ -16,11 +16,12 @@ public class MySqlDatabaseResource(string name, IMySqlParentResource mySqlParent
     /// Gets the connection string for the MySQL database.
     /// </summary>
     /// <returns>A connection string for the MySQL database.</returns>
-    public string? GetConnectionString()
+    public void EvaluateConnectionString(ConnectionStringCallbackContext context)
     {
-        if (Parent.GetConnectionString() is { } connectionString)
+        Parent.EvaluateConnectionString(context);
+        if (context.ConnectionString is { } connectionString)
         {
-            return $"{connectionString}Database={Name}";
+            context.ConnectionString = $"{connectionString}Database={Name}";
         }
         else
         {

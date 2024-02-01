@@ -3,14 +3,11 @@
 
 namespace Aspire.Hosting.ApplicationModel;
 
-internal sealed class ResourceWithConnectionStringSurrogate(IResource innerResource, Func<string> callback) : IResourceWithConnectionString
+internal sealed class ResourceWithConnectionStringSurrogate(IResource innerResource, Action<ConnectionStringCallbackContext> callback) : IResourceWithConnectionString
 {
     public string Name => innerResource.Name;
 
     public ResourceMetadataCollection Annotations => innerResource.Annotations;
 
-    public string? GetConnectionString()
-    {
-        return callback();
-    }
+    public void EvaluateConnectionString(ConnectionStringCallbackContext context) => callback(context);
 }

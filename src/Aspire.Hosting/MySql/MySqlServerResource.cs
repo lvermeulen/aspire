@@ -18,7 +18,7 @@ public class MySqlServerResource(string name, string password) : Resource(name),
     /// Gets the connection string for the MySQL server.
     /// </summary>
     /// <returns>A connection string for the MySQL server in the form "Server=host;Port=port;User ID=root;Password=password".</returns>
-    public string? GetConnectionString()
+    public void EvaluateConnectionString(ConnectionStringCallbackContext context)
     {
         if (!this.TryGetAllocatedEndPoints(out var allocatedEndpoints))
         {
@@ -27,7 +27,6 @@ public class MySqlServerResource(string name, string password) : Resource(name),
 
         var allocatedEndpoint = allocatedEndpoints.Single(); // We should only have one endpoint for MySQL.
 
-        var connectionString = $"Server={allocatedEndpoint.Address};Port={allocatedEndpoint.Port};User ID=root;Password=\"{PasswordUtil.EscapePassword(Password)}\";";
-        return connectionString;
+        context.ConnectionString = $"Server={allocatedEndpoint.Address};Port={allocatedEndpoint.Port};User ID=root;Password=\"{PasswordUtil.EscapePassword(Password)}\";";
     }
 }

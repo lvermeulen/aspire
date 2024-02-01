@@ -90,8 +90,9 @@ public class AddRedisTests
         var appModel = app.Services.GetRequiredService<DistributedApplicationModel>();
 
         var connectionStringResource = Assert.Single(appModel.Resources.OfType<IResourceWithConnectionString>());
-        var connectionString = connectionStringResource.GetConnectionString();
-        Assert.StartsWith("localhost:2000", connectionString);
+        var connectionStringResourceContext = new ConnectionStringCallbackContext(appBuilder.ExecutionContext);
+        connectionStringResource.EvaluateConnectionString(connectionStringResourceContext);
+        Assert.StartsWith("localhost:2000", connectionStringResourceContext.ConnectionString);
     }
 
     [Fact]

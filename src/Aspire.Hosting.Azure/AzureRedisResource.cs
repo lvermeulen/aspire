@@ -18,5 +18,5 @@ public class AzureRedisResource(string name) : Resource(name), IAzureResource, I
     /// Gets the connection string for the Azure Redis resource.
     /// </summary>
     /// <returns>The connection string for the Azure Redis resource.</returns>
-    public string? GetConnectionString() => ConnectionString;
+    public void EvaluateConnectionString(ConnectionStringCallbackContext context) => context.ConnectionString = ConnectionString;
 }

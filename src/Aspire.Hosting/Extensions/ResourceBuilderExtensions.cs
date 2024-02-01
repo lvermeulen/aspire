@@ -5,7 +5,6 @@ using System.Net.Sockets;
 using Aspire.Hosting.ApplicationModel;
 using Aspire.Hosting.Publishing;
 using Aspire.Hosting.Utils;
-using Microsoft.Extensions.Configuration;
 
 namespace Aspire.Hosting;
 
@@ -132,7 +131,7 @@ public static class ResourceBuilderExtensions
     /// The format of the environment variable will be "ConnectionStrings__{sourceResourceName}={connectionString}."
     /// <para>
     /// Each resource defines the format of the connection string value. The
-    /// underlying connection string value can be retrieved using <see cref="IResourceWithConnectionString.GetConnectionString"/>.
+    /// underlying connection string value can be retrieved using <see cref="IResourceWithConnectionString.EvaluateConnectionString"/>.
     /// </para>
     /// <para>
     /// Connection strings are also resolved by the configuration system (appSettings.json in the AppHost project, or environment variables). If a connection string is not found on the resource, the configuration system will be queried for a connection string
@@ -162,8 +161,9 @@ public static class ResourceBuilderExtensions
                 return;
             }
 
-            var connectionString = resource.GetConnectionString() ??
-                builder.ApplicationBuilder.Configuration.GetConnectionString(resource.Name);
+            var connectionStringCallbackContext = new ConnectionStringCallbackContext(builder.ApplicationBuilder.ExecutionContext);
+            resource.EvaluateConnectionString(connectionStringCallbackContext);
+            var connectionString = connectionStringCallbackContext.ConnectionString;
 
             if (string.IsNullOrEmpty(connectionString))
             {
@@ -223,36 +223,6 @@ public static class ResourceBuilderExtensions
         }
 
         return builder.WithEnvironment($"services__{name}", uri.ToString());
-    }
-
-    /// <summary>
-    /// Injects a connection string as an environment variable. The format of the environment variable will be "ConnectionStrings__{name}={value}." If the
-    /// connection string is not specified, the configuration system will be queried for a connection string using the connection string name.
-    /// </summary>
-    /// <typeparam name="TDestination"></typeparam>
-    /// <param name="builder">The resource where connection string will be injected.</param>
-    /// <param name="connectionString">A connection string</param>
-    /// <returns>A reference to the <see cref="IResourceBuilder{T}"/>.</returns>
-    public static IResourceBuilder<TDestination> WithReference<TDestination>(this IResourceBuilder<TDestination> builder, ConnectionString connectionString)
-        where TDestination : IResourceWithEnvironment
-    {
-        return builder.WithEnvironment(context =>
-        {
-            var connectionStringValue = connectionString.Value ??
-                builder.ApplicationBuilder.Configuration.GetConnectionString(connectionString.Name);
-
-            if (string.IsNullOrEmpty(connectionStringValue))
-            {
-                throw new DistributedApplicationException($"A connection string for '{connectionString.Name}' could not be retrieved.");
-            }
-
-            if (builder.Resource is ContainerResource)
-            {
-                connectionStringValue = HostNameResolver.ReplaceLocalhostWithContainerHost(connectionStringValue, builder.ApplicationBuilder.Configuration);
-            }
-
-            context.EnvironmentVariables[$"{ConnectionStringEnvironmentName}{connectionString.Name}"] = connectionStringValue;
-        });
     }
 
     /// <summary>

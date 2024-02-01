@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
 namespace Aspire.Hosting.ApplicationModel;
@@ -21,5 +21,5 @@ public class AzureQueueStorageResource(string name, AzureStorageResource storage
     /// Gets the connection string for the Azure Queue Storage resource.
     /// </summary>
     /// <returns>The connection string for the Azure Queue Storage resource.</returns>
-    public string? GetConnectionString() => Parent.GetQueueConnectionString();
+    public void EvaluateConnectionString(ConnectionStringCallbackContext context) => context.ConnectionString = Parent.GetQueueConnectionString();
 }

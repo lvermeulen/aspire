@@ -17,11 +17,13 @@ public class MongoDBDatabaseResource(string name, IMongoDBParentResource mongoDB
     /// Gets the connection string for the MongoDB database.
     /// </summary>
     /// <returns>A connection string for the MongoDB database.</returns>
-    public string? GetConnectionString()
+    public void EvaluateConnectionString(ConnectionStringCallbackContext context)
     {
-        if (Parent.GetConnectionString() is { } connectionString)
+        Parent.EvaluateConnectionString(context);
+
+        if (context.ConnectionString is { } connectionString)
         {
-            return connectionString.EndsWith('/') ?
+            context.ConnectionString = connectionString.EndsWith('/') ?
                 $"{connectionString}{Name}" :
                 $"{connectionString}/{Name}";
         }

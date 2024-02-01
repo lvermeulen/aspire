@@ -36,6 +36,8 @@ public class DistributedApplicationBuilder : IDistributedApplicationBuilder
     /// <inheritdoc />
     public IResourceCollection Resources { get; } = new ResourceCollection();
 
+    public DistributedApplicationExecutionContext ExecutionContext { get; }
+
     /// <summary>
     /// Initializes a new instance of the <see cref="DistributedApplicationBuilder"/> class with the specified options.
     /// </summary>
@@ -83,6 +85,15 @@ public class DistributedApplicationBuilder : IDistributedApplicationBuilder
         _innerBuilder.Services.AddLifecycleHook<Http2TransportMutationHook>();
         _innerBuilder.Services.AddKeyedSingleton<IDistributedApplicationPublisher, ManifestPublisher>("manifest");
         _innerBuilder.Services.AddKeyedSingleton<IDistributedApplicationPublisher, DcpPublisher>("dcp");
+
+        // Setup execution context.
+        ExecutionContext = _innerBuilder.Configuration["Publishing:Publisher"] switch
+        {
+            "manifest" => new DistributedApplicationExecutionContext(DistributedApplicationOperation.Publish),
+            _ => new DistributedApplicationExecutionContext(DistributedApplicationOperation.Run)
+        };
+
+        _innerBuilder.Services.AddSingleton<DistributedApplicationExecutionContext>(ExecutionContext);
     }
 
     private void ConfigurePublishingOptions(DistributedApplicationOptions options)

@@ -17,16 +17,14 @@ public static class AzureCosmosDBCloudApplicationBuilderExtensions
     /// </summary>
     /// <param name="builder">The <see cref="IDistributedApplicationBuilder"/>.</param>
     /// <param name="name">The name of the resource. This name will be used as the connection string name when referenced in a dependency.</param>
-    /// <param name="connectionString">The connection string.</param>
     /// <returns>A reference to the <see cref="IResourceBuilder{T}"/>.</returns>
     public static IResourceBuilder<AzureCosmosDBResource> AddAzureCosmosDB(
        this IDistributedApplicationBuilder builder,
-       string name,
-       string? connectionString = null)
+       string name)
     {
-        var connection = new AzureCosmosDBResource(name, connectionString);
+        var connection = new AzureCosmosDBResource(name);
         return builder.AddResource(connection)
-                      .WithManifestPublishingCallback(context => WriteCosmosDBToManifest(context, connection));
+                      .WithManifestPublishingCallback(WriteCosmosDBToManifest);
     }
 
     /// <summary>
@@ -48,19 +46,8 @@ public static class AzureCosmosDBCloudApplicationBuilderExtensions
         context.Writer.WriteString("parent", database.Parent.Name);
     }
 
-    private static void WriteCosmosDBToManifest(ManifestPublishingContext context, AzureCosmosDBResource cosmosDb)
+    private static void WriteCosmosDBToManifest(ManifestPublishingContext context)
     {
-        // If we are using an emulator then we assume that a connection string was not
-        // provided for the purpose of manifest generation.
-        if (cosmosDb.IsEmulator || cosmosDb.GetConnectionString() is not { } connectionString)
-        {
-            context.Writer.WriteString("type", "azure.cosmosdb.account.v0");
-        }
-        else
-        {
-            context.Writer.WriteString("type", "azure.cosmosdb.connection.v0");
-            context.Writer.WriteString("connectionString", connectionString);
-        }
-
+        context.Writer.WriteString("type", "azure.cosmosdb.account.v0");
     }
 }

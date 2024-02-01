@@ -19,7 +19,7 @@ public class RabbitMQServerResource(string name, string password) : Resource(nam
     /// Gets the connection string for the RabbitMQ server.
     /// </summary>
     /// <returns>A connection string for the RabbitMQ server in the form "amqp://user:password@host:port".</returns>
-    public string? GetConnectionString()
+    public void EvaluateConnectionString(ConnectionStringCallbackContext context)
     {
         if (!this.TryGetAllocatedEndPoints(out var allocatedEndpoints))
         {
@@ -27,6 +27,6 @@ public class RabbitMQServerResource(string name, string password) : Resource(nam
         }
 
         var endpoint = allocatedEndpoints.Where(a => a.Name != "management").Single();
-        return $"amqp://guest:{Password}@{endpoint.EndPointString}";
+        context.ConnectionString = $"amqp://guest:{Password}@{endpoint.EndPointString}";
     }
 }

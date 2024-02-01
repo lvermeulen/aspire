@@ -20,7 +20,7 @@ public class AzureOpenAIResource(string name) : Resource(name), IAzureResource, 
     /// Gets the connection string for the Azure OpenAI resource.
     /// </summary>
     /// <returns>The connection string for the Azure OpenAI resource.</returns>
-    string? IResourceWithConnectionString.GetConnectionString() => ConnectionString;
+    void IResourceWithConnectionString.EvaluateConnectionString(ConnectionStringCallbackContext context) => context.ConnectionString = ConnectionString;
 
     /// <summary>
     /// Gets the list of deployments of the Azure OpenAI resource.

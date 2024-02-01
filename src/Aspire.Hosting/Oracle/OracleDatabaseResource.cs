@@ -16,11 +16,13 @@ public class OracleDatabaseResource(string name, IOracleDatabaseParentResource o
     /// Gets the connection string for the Oracle Database.
     /// </summary>
     /// <returns>A connection string for the Oracle Database.</returns>
-    public string? GetConnectionString()
+    public void EvaluateConnectionString(ConnectionStringCallbackContext context)
     {
-        if (Parent.GetConnectionString() is { } connectionString)
+        Parent.EvaluateConnectionString(context);
+
+        if (context.ConnectionString is { } connectionString)
         {
-            return $"{connectionString}/{Name}";
+            context.ConnectionString = $"{connectionString}/{Name}";
         }
         else
         {

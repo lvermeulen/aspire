@@ -7,8 +7,10 @@ using Aspire.Hosting.ApplicationModel;
 
 namespace Aspire.Hosting.Publishing;
 
-public sealed class ManifestPublishingContext(string manifestPath, Utf8JsonWriter writer)
+public sealed class ManifestPublishingContext(DistributedApplicationExecutionContext executionContext, string manifestPath, Utf8JsonWriter writer)
 {
+    public DistributedApplicationExecutionContext ExecutionContext { get; } = executionContext;
+
     public string ManifestPath { get; } = manifestPath;
 
     public Utf8JsonWriter Writer { get; } = writer;

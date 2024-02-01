@@ -18,7 +18,7 @@ public class OracleDatabaseContainerResource(string name, string password) : Con
     /// Gets the connection string for the Oracle Database server.
     /// </summary>
     /// <returns>A connection string for the Oracle Database server in the form "user id=system;password=password;data source=localhost:port".</returns>
-    public string? GetConnectionString()
+    public void EvaluateConnectionString(ConnectionStringCallbackContext context)
     {
         if (!this.TryGetAllocatedEndPoints(out var allocatedEndpoints))
         {
@@ -27,7 +27,6 @@ public class OracleDatabaseContainerResource(string name, string password) : Con
 
         var allocatedEndpoint = allocatedEndpoints.Single(); // We should only have one endpoint for Oracle Database.
 
-        var connectionString = $"user id=system;password={PasswordUtil.EscapePassword(Password)};data source={allocatedEndpoint.Address}:{allocatedEndpoint.Port}";
-        return connectionString;
+        context.ConnectionString = $"user id=system;password={PasswordUtil.EscapePassword(Password)};data source={allocatedEndpoint.Address}:{allocatedEndpoint.Port}";
     }
 }

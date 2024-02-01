@@ -44,6 +44,8 @@ public interface IDistributedApplicationBuilder
     /// <exception cref="DistributedApplicationException">Thrown when a resource with the same name already exists.</exception>
     IResourceBuilder<T> AddResource<T>(T resource) where T : IResource;
 
+    public DistributedApplicationExecutionContext ExecutionContext { get; }
+
     /// <summary>
     /// Builds and returns a new <see cref="DistributedApplication"/> instance. This can only be called once.
     /// </summary>

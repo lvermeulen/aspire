@@ -123,10 +123,11 @@ public class AddOracleDatabaseTests
         var appModel = app.Services.GetRequiredService<DistributedApplicationModel>();
 
         var connectionStringResource = Assert.Single(appModel.Resources.OfType<IResourceWithConnectionString>());
-        var connectionString = connectionStringResource.GetConnectionString();
+        var connectionStringResourceContext = new ConnectionStringCallbackContext(appBuilder.ExecutionContext);
+        connectionStringResource.EvaluateConnectionString(connectionStringResourceContext);
 
-        Assert.StartsWith("user id=system;password=", connectionString);
-        Assert.EndsWith(";data source=localhost:2000", connectionString);
+        Assert.StartsWith("user id=system;password=", connectionStringResourceContext.ConnectionString);
+        Assert.EndsWith(";data source=localhost:2000", connectionStringResourceContext.ConnectionString);
     }
 
     [Fact]
@@ -148,11 +149,14 @@ public class AddOracleDatabaseTests
         var appModel = app.Services.GetRequiredService<DistributedApplicationModel>();
 
         var oracleResource = Assert.Single(appModel.Resources.OfType<OracleDatabaseContainerResource>());
-        var oracleConnectionString = oracleResource.GetConnectionString();
-        var oracleDatabaseResource = Assert.Single(appModel.Resources.OfType<OracleDatabaseResource>());
-        var dbConnectionString = oracleDatabaseResource.GetConnectionString();
+        var oracleResourceContext = new ConnectionStringCallbackContext(appBuilder.ExecutionContext);
+        oracleResource.EvaluateConnectionString(oracleResourceContext);
 
-        Assert.Equal(oracleConnectionString + "/db", dbConnectionString);
+        var oracleDatabaseResource = Assert.Single(appModel.Resources.OfType<OracleDatabaseResource>());
+        var oracleDatabaseResourceContext = new ConnectionStringCallbackContext(appBuilder.ExecutionContext);
+        oracleDatabaseResource.EvaluateConnectionString(oracleDatabaseResourceContext);
+
+        Assert.Equal(oracleResourceContext.ConnectionString + "/db", oracleDatabaseResourceContext.ConnectionString);
     }
 
     [Fact]

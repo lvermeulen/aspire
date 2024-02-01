@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
 namespace Aspire.Hosting.ApplicationModel;
@@ -35,6 +35,15 @@ public class AzureSqlDatabaseResource : Resource,
     /// Gets the connection string for the Azure SQL Database resource.
     /// </summary>
     /// <returns>The connection string for the Azure SQL Database resource.</returns>
-    public string? GetConnectionString() => ConnectionString
-                                            ?? $"Server=tcp:{Parent.Hostname},1433;Initial Catalog={Name};Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;Authentication=\"Active Directory Default\";";
+    public void EvaluateConnectionString(ConnectionStringCallbackContext context)
+    {
+        if (ConnectionString == null)
+        {
+            context.ConnectionString = $"Server=tcp:{Parent.Hostname},1433;Initial Catalog={Name};Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;Authentication=\"Active Directory Default\";";
+        }
+        else
+        {
+            context.ConnectionString = ConnectionString;
+        }
+    }
 }

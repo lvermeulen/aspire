@@ -18,7 +18,7 @@ public class PostgresServerResource(string name, string password) : Resource(nam
     /// Gets the connection string for the PostgreSQL server.
     /// </summary>
     /// <returns>A connection string for the PostgreSQL server in the form "Host=host;Port=port;Username=postgres;Password=password".</returns>
-    public string? GetConnectionString()
+    public void EvaluateConnectionString(ConnectionStringCallbackContext context)
     {
         if (!this.TryGetAllocatedEndPoints(out var allocatedEndpoints))
         {
@@ -27,7 +27,6 @@ public class PostgresServerResource(string name, string password) : Resource(nam
 
         var allocatedEndpoint = allocatedEndpoints.Single(); // We should only have one endpoint for Postgres.
 
-        var connectionString = $"Host={allocatedEndpoint.Address};Port={allocatedEndpoint.Port};Username=postgres;Password={PasswordUtil.EscapePassword(Password)};";
-        return connectionString;
+        context.ConnectionString = $"Host={allocatedEndpoint.Address};Port={allocatedEndpoint.Port};Username=postgres;Password={PasswordUtil.EscapePassword(Password)};";
     }
 }

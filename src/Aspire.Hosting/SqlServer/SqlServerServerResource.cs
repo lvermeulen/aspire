@@ -21,7 +21,7 @@ public class SqlServerServerResource(string name, string password) : Resource(na
     /// Gets the connection string for the SQL Server.
     /// </summary>
     /// <returns>A connection string for the SQL Server in the form "Server=host,port;User ID=sa;Password=password;TrustServerCertificate=true;".</returns>
-    public string? GetConnectionString()
+    public void EvaluateConnectionString(ConnectionStringCallbackContext context)
     {
         if (!this.TryGetAnnotationsOfType<AllocatedEndpointAnnotation>(out var allocatedEndpoints))
         {
@@ -32,6 +32,6 @@ public class SqlServerServerResource(string name, string password) : Resource(na
 
         // HACK: Use the 127.0.0.1 address because localhost is resolving to [::1] following
         //       up with DCP on this issue.
-        return $"Server=127.0.0.1,{endpoint.Port};User ID=sa;Password={PasswordUtil.EscapePassword(Password)};TrustServerCertificate=true;";
+        context.ConnectionString = $"Server=127.0.0.1,{endpoint.Port};User ID=sa;Password={PasswordUtil.EscapePassword(Password)};TrustServerCertificate=true;";
     }
 }

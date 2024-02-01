@@ -20,11 +20,12 @@ public class SqlServerDatabaseResource(string name, ISqlServerParentResource sql
     /// </summary>
     /// <returns>The connection string for the database resource.</returns>
     /// <exception cref="DistributedApplicationException">Thrown when the parent resource connection string is null.</exception>
-    public string? GetConnectionString()
+    public void EvaluateConnectionString(ConnectionStringCallbackContext context)
     {
-        if (Parent.GetConnectionString() is { } connectionString)
+        Parent.EvaluateConnectionString(context);
+        if (context.ConnectionString is { } connectionString)
         {
-            return $"{connectionString}Database={Name}";
+            context.ConnectionString = $"{connectionString}Database={Name}";
         }
         else
         {

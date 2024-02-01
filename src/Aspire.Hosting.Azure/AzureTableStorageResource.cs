@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
 namespace Aspire.Hosting.ApplicationModel;
@@ -21,5 +21,5 @@ public class AzureTableStorageResource(string name, AzureStorageResource storage
     /// Gets the connection string for the Azure Table Storage resource.
     /// </summary>
     /// <returns>The connection string for the Azure Table Storage resource.</returns>
-    public string? GetConnectionString() => Parent.GetTableConnectionString();
+    public void EvaluateConnectionString(ConnectionStringCallbackContext context) => context.ConnectionString = Parent.GetTableConnectionString();
 }

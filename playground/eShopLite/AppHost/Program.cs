@@ -1,10 +1,8 @@
-using Aspire.Hosting.Extensions;
-
 var builder = DistributedApplication.CreateBuilder(args);
 
 var ratingsDb = builder.Environment.EnvironmentName switch
 {
-    "Development" => builder.AddAzureCosmosDB("cosmos").UseEmulator().AddDatabase("ratingsdb"),
+    "Development2" => builder.AddAzureCosmosDB("cosmos").UseEmulator().AddDatabase("ratingsdb"),
     _ => builder.AddConnectionString("ratingsdb")
 };
 

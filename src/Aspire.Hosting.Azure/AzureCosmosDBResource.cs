@@ -11,24 +11,19 @@ namespace Aspire.Hosting.Azure.Data.Cosmos;
 /// A resource that represents an Azure Cosmos DB.
 /// </summary>
 /// <param name="name">The resource name.</param>
-/// <param name="connectionString">The connection string to use to connect.</param>
-public class AzureCosmosDBResource(string name, string? connectionString)
+public class AzureCosmosDBResource(string name)
     : Resource(name), IResourceWithConnectionString, IAzureResource
 {
     private readonly Collection<AzureCosmosDBDatabaseResource> _databases = new();
 
     /// <summary>
-    /// Gets or sets the connection string for the Azure Cosmos DB resource.
-    /// </summary>
-    public string? ConnectionString { get; set; } = connectionString;
-
-    /// <summary>
     /// Gets the connection string to use for this database.
     /// </summary>
     /// <returns>The connection string to use for this database.</returns>
-    public string? GetConnectionString() => IsEmulator
-        ? AzureCosmosDBEmulatorConnectionString.Create(GetEmulatorPort("emulator"))
-        : ConnectionString;
+    public void EvaluateConnectionString(ConnectionStringCallbackContext context)
+    {
+        context.ConnectionString = AzureCosmosDBEmulatorConnectionString.Create(GetEmulatorPort("emulator"));
+    }
 
     /// <summary>
     /// Gets a value indicating whether the Azure Cosmos DB resource is running in the local emulator.

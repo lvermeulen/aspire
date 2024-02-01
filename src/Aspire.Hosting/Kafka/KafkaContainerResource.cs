@@ -15,14 +15,14 @@ public class KafkaContainerResource(string name) : ContainerResource(name), IRes
     /// Gets the connection string for Kafka broker.
     /// </summary>
     /// <returns>A connection string for the Kafka in the form "host:port" to be passed as <see href="https://docs.confluent.io/platform/current/clients/confluent-kafka-dotnet/_site/api/Confluent.Kafka.ClientConfig.html#Confluent_Kafka_ClientConfig_BootstrapServers">BootstrapServers</see>.</returns>
-    public string? GetConnectionString()
+    public void EvaluateConnectionString(ConnectionStringCallbackContext context)
     {
         if (!this.TryGetAllocatedEndPoints(out var allocatedEndpoints))
         {
             throw new DistributedApplicationException($"Kafka resource \"{Name}\" does not have endpoint annotation.");
         }
 
-        return allocatedEndpoints.SingleOrDefault()?.EndPointString;
+        context.ConnectionString = allocatedEndpoints.SingleOrDefault()?.EndPointString;
     }
 
     internal int GetPort()
