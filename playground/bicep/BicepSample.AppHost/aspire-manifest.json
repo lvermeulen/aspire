@@ -136,13 +136,7 @@
       }
     },
     "redis": {
-      "type": "azure.bicep.v0",
-      "connectionString": "{redis.secretOutputs.connectionString}",
-      "path": "aspire.hosting.azure.bicep.redis.bicep",
-      "params": {
-        "redisCacheName": "redis",
-        "keyVaultName": ""
-      }
+      "type": "azure.bicep.v0"
     },
     "sb": {
       "type": "azure.bicep.v0",

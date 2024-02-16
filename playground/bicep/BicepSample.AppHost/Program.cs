@@ -1,4 +1,5 @@
 using Aspire.Hosting.Azure;
+using Aspire.Hosting.Azure.Redis;
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -35,7 +36,7 @@ var cosmosDb = builder.AddBicepCosmosDb("cosmos")
 var appInsights = builder.AddBicepApplicationInsights("ai");
 
 // Redis takes forever to spin up...
-var redis = builder.AddRedis("redis").PublishAsAzureRedis();
+var redis = builder.AddRedis("redis").PublishAsAzureCacheForRedis();
 
 var serviceBus = builder.AddBicepAzureServiceBus("sb", ["queue1"], ["topic1"]);
 
