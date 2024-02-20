@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System.Security.Cryptography.X509Certificates;
+using Aspire.Dashboard.Authentication;
 using Grpc.Core;
 using Grpc.Net.Client;
 using Microsoft.AspNetCore.InternalTesting;
@@ -32,6 +33,79 @@ public class OtlpServiceTests
 
         // Act
         var response = await client.ExportAsync(new ExportLogsServiceRequest());
+
+        // Assert
+        Assert.Equal(0, response.PartialSuccess.RejectedLogRecords);
+    }
+
+    [Fact]
+    public async void CallService_OtlpEndPoint_RequiredApiKeyMissing_Failure()
+    {
+        // Arrange
+        var apiKey = "TestKey123!";
+        await using var app = IntegrationTestHelpers.CreateDashboardWebApplication(_testOutputHelper, config =>
+        {
+            config[DashboardWebApplication.DashboardOtlpApiKeyVariableName] = apiKey;
+        });
+        await app.StartAsync();
+
+        using var channel = GrpcChannel.ForAddress($"http://{app.OtlpServiceEndPointAccessor()}");
+        var client = new LogsService.LogsServiceClient(channel);
+
+        // Act
+        var ex = await Assert.ThrowsAsync<RpcException>(() => client.ExportAsync(new ExportLogsServiceRequest()).ResponseAsync);
+
+        // Assert
+        Assert.Equal(StatusCode.PermissionDenied, ex.StatusCode);
+    }
+
+    [Fact]
+    public async void CallService_OtlpEndPoint_RequiredApiKeyWrong_Failure()
+    {
+        // Arrange
+        var apiKey = "TestKey123!";
+        await using var app = IntegrationTestHelpers.CreateDashboardWebApplication(_testOutputHelper, config =>
+        {
+            config[DashboardWebApplication.DashboardOtlpApiKeyVariableName] = apiKey;
+        });
+        await app.StartAsync();
+
+        using var channel = GrpcChannel.ForAddress($"http://{app.OtlpServiceEndPointAccessor()}");
+        var client = new LogsService.LogsServiceClient(channel);
+
+        var metadata = new Metadata
+        {
+            { ApiKeyDefaults.ApiKeyHeaderName, "WRONG" }
+        };
+
+        // Act
+        var ex = await Assert.ThrowsAsync<RpcException>(() => client.ExportAsync(new ExportLogsServiceRequest(), metadata).ResponseAsync);
+
+        // Assert
+        Assert.Equal(StatusCode.PermissionDenied, ex.StatusCode);
+    }
+
+    [Fact]
+    public async void CallService_OtlpEndPoint_RequiredApiKeySent_Success()
+    {
+        // Arrange
+        var apiKey = "TestKey123!";
+        await using var app = IntegrationTestHelpers.CreateDashboardWebApplication(_testOutputHelper, config =>
+        {
+            config[DashboardWebApplication.DashboardOtlpApiKeyVariableName] = apiKey;
+        });
+        await app.StartAsync();
+
+        using var channel = GrpcChannel.ForAddress($"http://{app.OtlpServiceEndPointAccessor()}");
+        var client = new LogsService.LogsServiceClient(channel);
+
+        var metadata = new Metadata
+        {
+            { ApiKeyDefaults.ApiKeyHeaderName, apiKey }
+        };
+
+        // Act
+        var response = await client.ExportAsync(new ExportLogsServiceRequest(), metadata);
 
         // Assert
         Assert.Equal(0, response.PartialSuccess.RejectedLogRecords);
