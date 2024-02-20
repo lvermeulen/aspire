@@ -30,6 +30,24 @@ public class StartupTests
         AssertDynamicIPEndpoint(app.OtlpServiceEndPointAccessor);
     }
 
+    [Fact]
+    public async void EndPointAccessors_AppStarted_BrowserGet_Success()
+    {
+        // Arrange
+        await using var app = IntegrationTestHelpers.CreateDashboardWebApplication(_testOutputHelper);
+
+        // Act
+        await app.StartAsync();
+
+        using var client = new HttpClient { BaseAddress = new Uri($"http://{app.BrowserEndPointAccessor()}") };
+
+        // Act
+        var response = await client.GetAsync("/");
+
+        // Assert
+        response.EnsureSuccessStatusCode();
+    }
+
     private static void AssertDynamicIPEndpoint(Func<IPEndPoint> endPointAccessor)
     {
         // Check that the specified dynamic port of 0 is overridden with the actual port number.

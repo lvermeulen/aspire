@@ -16,7 +16,7 @@ public static class IntegrationTestHelpers
     {
         var initialData = new Dictionary<string, string?>
         {
-            [DashboardWebApplication.DashboardUrlVariableName] = "https://127.0.0.1:0",
+            [DashboardWebApplication.DashboardUrlVariableName] = "http://127.0.0.1:0",
             [DashboardWebApplication.DashboardOtlpUrlVariableName] = "http://127.0.0.1:0",
             ["Kestrel:Certificates:Default:Path"] = TestCertificateLoader.TestCertificatePath,
             ["Kestrel:Certificates:Default:Password"] = "testPassword"

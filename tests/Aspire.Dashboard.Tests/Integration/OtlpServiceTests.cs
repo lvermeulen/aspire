@@ -117,7 +117,11 @@ public class OtlpServiceTests
         // Arrange
         X509Certificate2? clientCallbackCert = null;
 
-        await using var app = IntegrationTestHelpers.CreateDashboardWebApplication(_testOutputHelper);
+        await using var app = IntegrationTestHelpers.CreateDashboardWebApplication(_testOutputHelper, config =>
+        {
+            // Change dashboard to HTTPS so the caller can negotiate a HTTP/2 connection.
+            config[DashboardWebApplication.DashboardUrlVariableName] = "https://127.0.0.1:0";
+        });
         await app.StartAsync();
 
         using var channel = GrpcChannel.ForAddress($"https://{app.BrowserEndPointAccessor()}", new()
