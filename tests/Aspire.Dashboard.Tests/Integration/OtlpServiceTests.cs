@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System.Security.Cryptography.X509Certificates;
+using Aspire.Dashboard.Authentication;
 using Aspire.Dashboard.Authentication.OtlpApiKey;
 using Grpc.Core;
 using Grpc.Net.Client;
@@ -45,6 +46,7 @@ public class OtlpServiceTests
         var apiKey = "TestKey123!";
         await using var app = IntegrationTestHelpers.CreateDashboardWebApplication(_testOutputHelper, config =>
         {
+            config[DashboardWebApplication.DashboardOtlpAuthModeVariableName] = OtlpAuthMode.ApiKey.ToString();
             config[DashboardWebApplication.DashboardOtlpApiKeyVariableName] = apiKey;
         });
         await app.StartAsync();
@@ -66,6 +68,7 @@ public class OtlpServiceTests
         var apiKey = "TestKey123!";
         await using var app = IntegrationTestHelpers.CreateDashboardWebApplication(_testOutputHelper, config =>
         {
+            config[DashboardWebApplication.DashboardOtlpAuthModeVariableName] = OtlpAuthMode.ApiKey.ToString();
             config[DashboardWebApplication.DashboardOtlpApiKeyVariableName] = apiKey;
         });
         await app.StartAsync();
@@ -92,6 +95,7 @@ public class OtlpServiceTests
         var apiKey = "TestKey123!";
         await using var app = IntegrationTestHelpers.CreateDashboardWebApplication(_testOutputHelper, config =>
         {
+            config[DashboardWebApplication.DashboardOtlpAuthModeVariableName] = OtlpAuthMode.ApiKey.ToString();
             config[DashboardWebApplication.DashboardOtlpApiKeyVariableName] = apiKey;
         });
         await app.StartAsync();
@@ -144,5 +148,76 @@ public class OtlpServiceTests
         Assert.Equal(StatusCode.Unauthenticated, ex.StatusCode);
         Assert.NotNull(clientCallbackCert);
         Assert.Equal(TestCertificateLoader.GetTestCertificate().Thumbprint, clientCallbackCert.Thumbprint);
+    }
+
+    [Fact]
+    public async void CallService_OtlpEndpoint_RequiredClientCertificateMissing_Failure()
+    {
+        // Arrange
+        await using var app = IntegrationTestHelpers.CreateDashboardWebApplication(_testOutputHelper, config =>
+        {
+            // Change dashboard to HTTPS so the caller can negotiate a HTTP/2 connection.
+            config[DashboardWebApplication.DashboardOtlpUrlVariableName] = "https://127.0.0.1:0";
+
+            config[DashboardWebApplication.DashboardOtlpAuthModeVariableName] = OtlpAuthMode.ClientCertificate.ToString();
+        });
+        await app.StartAsync();
+
+        using var channel = GrpcChannel.ForAddress($"https://{app.OtlpServiceEndPointAccessor()}", new()
+        {
+            HttpHandler = new HttpClientHandler
+            {
+                ServerCertificateCustomValidationCallback = (message, cert, chain, errors) =>
+                {
+                    return true;
+                }
+            }
+        });
+        var client = new LogsService.LogsServiceClient(channel);
+
+        // Act
+        var ex = await Assert.ThrowsAsync<RpcException>(() => client.ExportAsync(new ExportLogsServiceRequest()).ResponseAsync);
+
+        // Assert
+        Assert.Equal(StatusCode.Unavailable, ex.StatusCode);
+    }
+
+    [Fact]
+    public async void CallService_OtlpEndpoint_RequiredClientCertificateValid_Success()
+    {
+        // Arrange
+        X509Certificate2? clientCallbackCert = null;
+
+        await using var app = IntegrationTestHelpers.CreateDashboardWebApplication(_testOutputHelper, config =>
+        {
+            // Change dashboard to HTTPS so the caller can negotiate a HTTP/2 connection.
+            config[DashboardWebApplication.DashboardOtlpUrlVariableName] = "https://127.0.0.1:0";
+
+            config[DashboardWebApplication.DashboardOtlpAuthModeVariableName] = OtlpAuthMode.ClientCertificate.ToString();
+
+            config["CertificateAuthentication:AllowedCertificateTypes"] = "SelfSigned";
+            config["CertificateAuthentication:ValidateValidityPeriod"] = "false";
+        });
+        await app.StartAsync();
+
+        var handler = new SocketsHttpHandler();
+        handler.SslOptions.RemoteCertificateValidationCallback = (message, cert, chain, errors) =>
+        {
+            clientCallbackCert = (X509Certificate2)cert!;
+            return true;
+        };
+        handler.SslOptions.ClientCertificates = new X509CertificateCollection(new[] { TestCertificateLoader.GetTestCertificate("eku.client.pfx") });
+
+        using var channel = GrpcChannel.ForAddress($"https://{app.OtlpServiceEndPointAccessor()}", new()
+        {
+            HttpHandler = handler
+        });
+        var client = new LogsService.LogsServiceClient(channel);
+
+        // Act
+        var response = await client.ExportAsync(new ExportLogsServiceRequest());
+
+        // Assert
+        Assert.Equal(0, response.PartialSuccess.RejectedLogRecords);
     }
 }

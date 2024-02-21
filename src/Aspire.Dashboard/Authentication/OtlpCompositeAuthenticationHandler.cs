@@ -25,16 +25,21 @@ public sealed class OtlpCompositeAuthenticationHandler : AuthenticationHandler<O
             return connectionResult;
         }
 
-        var apiKeyResult = await Context.AuthenticateAsync(OtlpApiKeyAuthenticationDefaults.AuthenticationScheme).ConfigureAwait(false);
-        if (apiKeyResult.Failure != null)
+        if (Options.OtlpAuthMode == OtlpAuthMode.ApiKey)
         {
-            return apiKeyResult;
+            var apiKeyResult = await Context.AuthenticateAsync(OtlpApiKeyAuthenticationDefaults.AuthenticationScheme).ConfigureAwait(false);
+            if (apiKeyResult.Failure != null)
+            {
+                return apiKeyResult;
+            }
         }
-
-        var certificateResult = await Context.AuthenticateAsync(CertificateAuthenticationDefaults.AuthenticationScheme).ConfigureAwait(false);
-        if (certificateResult.Failure != null)
+        else if (Options.OtlpAuthMode == OtlpAuthMode.ClientCertificate)
         {
-            return certificateResult;
+            var certificateResult = await Context.AuthenticateAsync(CertificateAuthenticationDefaults.AuthenticationScheme).ConfigureAwait(false);
+            if (certificateResult.Failure != null)
+            {
+                return certificateResult;
+            }
         }
 
         var claims = new List<Claim>
@@ -54,4 +59,5 @@ public static class OtlpCompositeAuthenticationDefaults
 
 public sealed class OtlpCompositeAuthenticationHandlerOptions : AuthenticationSchemeOptions
 {
+    public OtlpAuthMode OtlpAuthMode { get; set; }
 }

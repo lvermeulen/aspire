@@ -30,7 +30,7 @@ public static class IntegrationTestHelpers
         {
             builder.Configuration.AddConfiguration(config);
             builder.Logging.AddXunit(testOutputHelper);
-            builder.Logging.SetMinimumLevel(LogLevel.Debug);
+            builder.Logging.SetMinimumLevel(LogLevel.Trace);
         });
 
         return dashboardWebApplication;

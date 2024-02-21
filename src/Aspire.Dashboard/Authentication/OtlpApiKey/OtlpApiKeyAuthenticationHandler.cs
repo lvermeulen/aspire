@@ -11,17 +11,19 @@ public class OtlpApiKeyAuthenticationHandler : AuthenticationHandler<OtlpApiKeyA
 {
     public const string ApiKeyHeaderName = "x-otlp-api-key";
 
-    private readonly IApiKeyValidation _apiKeyValidation;
-
-    public OtlpApiKeyAuthenticationHandler(IApiKeyValidation apiKeyValidation, IOptionsMonitor<OtlpApiKeyAuthenticationHandlerOptions> options, ILoggerFactory logger, UrlEncoder encoder) : base(options, logger, encoder)
+    public OtlpApiKeyAuthenticationHandler(IOptionsMonitor<OtlpApiKeyAuthenticationHandlerOptions> options, ILoggerFactory logger, UrlEncoder encoder) : base(options, logger, encoder)
     {
-        _apiKeyValidation = apiKeyValidation;
     }
 
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
+        if (string.IsNullOrEmpty(Options.OtlpApiKey))
+        {
+            throw new InvalidOperationException("OTLP API key is not configured.");
+        }
+
         var apiKey = Context.Request.Headers[ApiKeyHeaderName].ToString();
-        if (!_apiKeyValidation.IsValidApiKey(apiKey))
+        if (Options.OtlpApiKey != apiKey)
         {
             return Task.FromResult(AuthenticateResult.Fail("Incoming API key doesn't match required API key."));
         }
@@ -37,4 +39,5 @@ public static class OtlpApiKeyAuthenticationDefaults
 
 public sealed class OtlpApiKeyAuthenticationHandlerOptions : AuthenticationSchemeOptions
 {
+    public string? OtlpApiKey { get; set; }
 }
