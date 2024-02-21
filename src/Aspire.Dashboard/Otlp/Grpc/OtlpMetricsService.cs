@@ -10,7 +10,7 @@ using OpenTelemetry.Proto.Collector.Metrics.V1;
 
 namespace Aspire.Dashboard.Otlp.Grpc;
 
-[Authorize(Policy = ApiKeyDefaults.PolicyName)]
+[Authorize(Policy = OtlpAuthorization.PolicyName)]
 public class OtlpMetricsService : MetricsService.MetricsServiceBase
 {
     private readonly ILogger<OtlpMetricsService> _logger;

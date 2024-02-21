@@ -1,9 +1,10 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Aspire.Dashboard.Otlp.Security;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 
-namespace Aspire.Dashboard.Otlp.Security;
+namespace Aspire.Dashboard.Authentication.OtlpConnection;
 
 internal static class ListenOptionsOtlpExtensions
 {

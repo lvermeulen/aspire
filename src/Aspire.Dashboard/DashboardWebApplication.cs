@@ -4,13 +4,13 @@
 using System.Net;
 using System.Security.Claims;
 using Aspire.Dashboard.Authentication;
+using Aspire.Dashboard.Authentication.OtlpApiKey;
+using Aspire.Dashboard.Authentication.OtlpConnection;
 using Aspire.Dashboard.Components;
 using Aspire.Dashboard.Model;
 using Aspire.Dashboard.Otlp.Grpc;
-using Aspire.Dashboard.Otlp.Security;
 using Aspire.Dashboard.Otlp.Storage;
 using Microsoft.AspNetCore.Authentication.Certificate;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -88,7 +88,7 @@ public class DashboardWebApplication : IAsyncDisposable
         builder.Services.AddScoped<IDashboardClient, DashboardClient>();
 
         // OTLP services.
-        builder.Services.AddGrpc(options => options.Interceptors.Add<OtlpInterceptor>());
+        builder.Services.AddGrpc();
         builder.Services.AddSingleton<TelemetryRepository>();
         builder.Services.AddTransient<StructuredLogsViewModel>();
         builder.Services.AddTransient<TracesViewModel>();
@@ -252,7 +252,10 @@ public class DashboardWebApplication : IAsyncDisposable
     private static void ConfigurationAuthentication(WebApplicationBuilder builder)
     {
         builder.Services
-            .AddAuthentication(CertificateAuthenticationDefaults.AuthenticationScheme)
+            .AddAuthentication(OtlpCompositeAuthenticationDefaults.AuthenticationScheme)
+            .AddScheme<OtlpCompositeAuthenticationHandlerOptions, OtlpCompositeAuthenticationHandler>(OtlpCompositeAuthenticationDefaults.AuthenticationScheme, o => { })
+            .AddScheme<OtlpApiKeyAuthenticationHandlerOptions, OtlpApiKeyAuthenticationHandler>(OtlpApiKeyAuthenticationDefaults.AuthenticationScheme, o => { })
+            .AddScheme<OtlpConnectionAuthenticationHandlerOptions, OtlpConnectionAuthenticationHandler>(OtlpConnectionAuthenticationDefaults.AuthenticationScheme, o => { })
             .AddCertificate(options =>
             {
                 options.Events = new CertificateAuthenticationEvents
@@ -281,15 +284,11 @@ public class DashboardWebApplication : IAsyncDisposable
 
         builder.Services.AddAuthorization(options =>
         {
-            options.AddPolicy("ApiKeyPolicy", policy =>
+            options.AddPolicy(OtlpAuthorization.PolicyName, policy =>
             {
-                policy.AddAuthenticationSchemes(CertificateAuthenticationDefaults.AuthenticationScheme);
-                policy.Requirements.Add(new ApiKeyAuthorizationRequirement());
+                policy.RequireClaim(OtlpAuthorization.OtlpClaimName);
             });
         });
-
-        builder.Services.AddScoped<IAuthorizationHandler, ApiKeyAuthorizationHandler>();
-        builder.Services.AddHttpContextAccessor();
 
         var otlpApiKey = builder.Configuration[DashboardOtlpApiKeyVariableName];
         if (!string.IsNullOrEmpty(otlpApiKey))

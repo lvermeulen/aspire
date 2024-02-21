@@ -10,7 +10,7 @@ using OpenTelemetry.Proto.Collector.Trace.V1;
 
 namespace Aspire.Dashboard.Otlp.Grpc;
 
-[Authorize(Policy = ApiKeyDefaults.PolicyName)]
+[Authorize(Policy = OtlpAuthorization.PolicyName)]
 public class OtlpTraceService : TraceService.TraceServiceBase
 {
     private readonly ILogger<OtlpTraceService> _logger;

@@ -2,7 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System.Security.Cryptography.X509Certificates;
-using Aspire.Dashboard.Authentication;
+using Aspire.Dashboard.Authentication.OtlpApiKey;
 using Grpc.Core;
 using Grpc.Net.Client;
 using Microsoft.AspNetCore.InternalTesting;
@@ -56,7 +56,7 @@ public class OtlpServiceTests
         var ex = await Assert.ThrowsAsync<RpcException>(() => client.ExportAsync(new ExportLogsServiceRequest()).ResponseAsync);
 
         // Assert
-        Assert.Equal(StatusCode.PermissionDenied, ex.StatusCode);
+        Assert.Equal(StatusCode.Unauthenticated, ex.StatusCode);
     }
 
     [Fact]
@@ -75,14 +75,14 @@ public class OtlpServiceTests
 
         var metadata = new Metadata
         {
-            { ApiKeyDefaults.ApiKeyHeaderName, "WRONG" }
+            { OtlpApiKeyAuthenticationHandler.ApiKeyHeaderName, "WRONG" }
         };
 
         // Act
         var ex = await Assert.ThrowsAsync<RpcException>(() => client.ExportAsync(new ExportLogsServiceRequest(), metadata).ResponseAsync);
 
         // Assert
-        Assert.Equal(StatusCode.PermissionDenied, ex.StatusCode);
+        Assert.Equal(StatusCode.Unauthenticated, ex.StatusCode);
     }
 
     [Fact]
@@ -101,7 +101,7 @@ public class OtlpServiceTests
 
         var metadata = new Metadata
         {
-            { ApiKeyDefaults.ApiKeyHeaderName, apiKey }
+            { OtlpApiKeyAuthenticationHandler.ApiKeyHeaderName, apiKey }
         };
 
         // Act
@@ -141,7 +141,7 @@ public class OtlpServiceTests
         var ex = await Assert.ThrowsAsync<RpcException>(() => client.ExportAsync(new ExportLogsServiceRequest()).ResponseAsync);
 
         // Assert
-        Assert.Equal(StatusCode.PermissionDenied, ex.StatusCode);
+        Assert.Equal(StatusCode.Unauthenticated, ex.StatusCode);
         Assert.NotNull(clientCallbackCert);
         Assert.Equal(TestCertificateLoader.GetTestCertificate().Thumbprint, clientCallbackCert.Thumbprint);
     }

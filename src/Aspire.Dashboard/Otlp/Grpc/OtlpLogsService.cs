@@ -10,7 +10,7 @@ using OpenTelemetry.Proto.Collector.Logs.V1;
 
 namespace Aspire.Dashboard.Otlp.Grpc;
 
-[Authorize(Policy = ApiKeyDefaults.PolicyName)]
+[Authorize(Policy = OtlpAuthorization.PolicyName)]
 public class OtlpLogsService : LogsService.LogsServiceBase
 {
     private readonly ILogger<OtlpLogsService> _logger;
