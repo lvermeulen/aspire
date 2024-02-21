@@ -266,6 +266,7 @@ public class DashboardWebApplication : IAsyncDisposable
             .AddScheme<OtlpConnectionAuthenticationHandlerOptions, OtlpConnectionAuthenticationHandler>(OtlpConnectionAuthenticationDefaults.AuthenticationScheme, o => { })
             .AddCertificate(options =>
             {
+                // Bind options to configuration so they can be override by environment variables.
                 builder.Configuration.Bind("CertificateAuthentication", options);
 
                 options.Events = new CertificateAuthenticationEvents
