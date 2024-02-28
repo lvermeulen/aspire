@@ -10,7 +10,7 @@ namespace Aspire.Dashboard.Otlp.Model;
 [DebuggerDisplay("TimeStamp = {TimeStamp}, Severity = {Severity}, Message = {Message}")]
 public class OtlpLogEntry
 {
-    public ReadOnlyMemory<KeyValuePair<string, string>> Attributes { get; }
+    public KeyValuePair<string, string>[] Attributes { get; }
     public DateTime TimeStamp { get; }
     public uint Flags { get; }
     public LogLevel Severity { get; }
@@ -93,7 +93,7 @@ public class OtlpLogEntry
         AddOptionalValue("SpanId", SpanId, props);
         AddOptionalValue("OriginalFormat", OriginalFormat, props);
 
-        foreach (var kv in Attributes.Span)
+        foreach (var kv in Attributes)
         {
             props.TryAdd(kv.Key, kv.Value);
         }

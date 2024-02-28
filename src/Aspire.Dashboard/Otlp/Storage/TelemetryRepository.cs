@@ -351,7 +351,7 @@ public sealed class TelemetryRepository
                             }
                         }
 
-                        foreach (var kvp in logEntry.Attributes.Span)
+                        foreach (var kvp in logEntry.Attributes)
                         {
                             _logPropertyKeys.Add((application, kvp.Key));
                         }

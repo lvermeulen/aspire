@@ -85,7 +85,7 @@ public class OtlpApplication
         try
         {
             // Temporary attributes array to use when adding metrics to the instruments.
-            Memory<KeyValuePair<string, string>>? tempAttributes = null;
+            KeyValuePair<string, string>[]? tempAttributes = null;
 
             foreach (var sm in scopeMetrics)
             {

@@ -24,7 +24,7 @@ public class OtlpInstrument
     public Dictionary<ReadOnlyMemory<KeyValuePair<string, string>>, DimensionScope> Dimensions { get; } = new(ScopeAttributesComparer.Instance);
     public Dictionary<string, List<string>> KnownAttributeValues { get; } = new();
 
-    public void AddMetrics(Metric metric, ref Memory<KeyValuePair<string, string>>? tempAttributes)
+    public void AddMetrics(Metric metric, ref KeyValuePair<string, string>[]? tempAttributes)
     {
         switch (metric.DataCase)
         {
@@ -51,14 +51,14 @@ public class OtlpInstrument
 
     public OtlpInstrumentKey GetKey() => new(Parent.MeterName, Name);
 
-    private DimensionScope FindScope(RepeatedField<KeyValue> attributes, ref Memory<KeyValuePair<string, string>>? tempAttributes)
+    private DimensionScope FindScope(RepeatedField<KeyValue> attributes, ref KeyValuePair<string, string>[]? tempAttributes)
     {
         // We want to find the dimension scope that matches the attributes, but we don't want to allocate.
         // Copy values to a temporary reusable array.
         OtlpHelpers.CopyKeyValuePairs(attributes, Options, out var copyCount, ref tempAttributes);
-        var comparableAttributes = tempAttributes.Value.Slice(0, copyCount);
+        Array.Sort(tempAttributes, 0, copyCount, KeyValuePairComparer.Instance);
 
-        comparableAttributes.Span.Sort(KeyValuePairComparer.Instance);
+        var comparableAttributes = tempAttributes.AsMemory(0, copyCount);
 
         if (!Dimensions.TryGetValue(comparableAttributes, out var dimension))
         {

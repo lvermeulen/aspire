@@ -123,7 +123,7 @@ public partial class ChartContainer : ComponentBase, IAsyncDisposable
         return true;
     }
 
-    private static bool MatchFilter(ReadOnlyMemory<KeyValuePair<string, string>> attributes, DimensionFilterViewModel filter)
+    private static bool MatchFilter(KeyValuePair<string, string>[] attributes, DimensionFilterViewModel filter)
     {
         // No filter selected.
         if (!filter.SelectedValues.Any())

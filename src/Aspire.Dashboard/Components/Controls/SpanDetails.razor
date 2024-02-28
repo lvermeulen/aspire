@@ -1,7 +1,6 @@
 ﻿@using Aspire.Dashboard.Model
 @using Aspire.Dashboard.Otlp.Model
 @using Aspire.Dashboard.Resources
-@using System.Runtime.InteropServices
 @inject IStringLocalizer<ControlsStrings> Loc
 
 <div class="span-details-layout">
@@ -81,7 +80,7 @@
                         {
                             <div class="event-attributes-header">Attributes</div>
                             <PropertyGrid TItem="SpanPropertyViewModel"
-                                Items="@Queryable.AsQueryable(MemoryMarshal.ToEnumerable(context.Attributes).Select(a => new SpanPropertyViewModel() { Name = a.Key, Value = a.Value }))"
+                                Items="@Queryable.AsQueryable(context.Attributes.Select(a => new SpanPropertyViewModel() { Name = a.Key, Value = a.Value }))"
                                 GridTemplateColumns="1fr 2fr"
                                 NameColumnValue="(vm) => vm.Name"
                                 ValueColumnValue="(vm) => vm.Value"

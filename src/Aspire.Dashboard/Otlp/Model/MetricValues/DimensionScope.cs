@@ -12,7 +12,7 @@ public class DimensionScope
 {
     public const string NoDimensions = "no-dimensions";
     public string Name { get; init; }
-    public ReadOnlyMemory<KeyValuePair<string, string>> Attributes { get; init; }
+    public KeyValuePair<string, string>[] Attributes { get; init; }
     public IList<MetricValueBase> Values => _values;
 
     private readonly CircularBuffer<MetricValueBase> _values;
@@ -21,7 +21,7 @@ public class DimensionScope
 
     public int Capacity => _values.Capacity;
 
-    public DimensionScope(int capacity, ReadOnlyMemory<KeyValuePair<string, string>> attributes)
+    public DimensionScope(int capacity, KeyValuePair<string, string>[] attributes)
     {
         Attributes = attributes;
         var name = Attributes.ConcatProperties();

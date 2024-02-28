@@ -263,7 +263,7 @@ public class MetricsTests
     private static void AssertDimensionValues(Dictionary<ReadOnlyMemory<KeyValuePair<string, string>>, DimensionScope> dimensions, ReadOnlyMemory<KeyValuePair<string, string>> key, int valueCount)
     {
         var scope = dimensions[key];
-        Assert.True(Enumerable.SequenceEqual(MemoryMarshal.ToEnumerable(key), MemoryMarshal.ToEnumerable(scope.Attributes)), "Key and attributes don't match.");
+        Assert.True(Enumerable.SequenceEqual(MemoryMarshal.ToEnumerable(key), scope.Attributes), "Key and attributes don't match.");
 
         Assert.Equal(valueCount, scope.Values.Count);
     }
