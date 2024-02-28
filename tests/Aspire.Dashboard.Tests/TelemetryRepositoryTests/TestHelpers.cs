@@ -154,7 +154,7 @@ internal static class TestHelpers
         var inMemorySettings = new Dictionary<string, string?>();
         if (maxMetricsCount != null)
         {
-            inMemorySettings[TelemetryRepository.MaxMetricsCountKey] = maxMetricsCount.Value.ToString(CultureInfo.InvariantCulture);
+            inMemorySettings[TelemetryRepository.MetricsCountLimitKey] = maxMetricsCount.Value.ToString(CultureInfo.InvariantCulture);
         }
 
         var configuration = new ConfigurationBuilder()

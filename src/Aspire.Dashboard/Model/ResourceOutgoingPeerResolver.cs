@@ -50,12 +50,12 @@ public sealed class ResourceOutgoingPeerResolver : IOutgoingPeerResolver, IAsync
         });
     }
 
-    public bool TryResolvePeerName(KeyValuePair<string, string>[] attributes, [NotNullWhen(true)] out string? name)
+    public bool TryResolvePeerName(ReadOnlyMemory<KeyValuePair<string, string>> attributes, [NotNullWhen(true)] out string? name)
     {
         return TryResolvePeerNameCore(_resourceByName, attributes, out name);
     }
 
-    internal static bool TryResolvePeerNameCore(IDictionary<string, ResourceViewModel> resources, KeyValuePair<string, string>[] attributes, out string? name)
+    internal static bool TryResolvePeerNameCore(IDictionary<string, ResourceViewModel> resources, ReadOnlyMemory<KeyValuePair<string, string>> attributes, out string? name)
     {
         var address = OtlpHelpers.GetPeerAddress(attributes);
         if (address != null)

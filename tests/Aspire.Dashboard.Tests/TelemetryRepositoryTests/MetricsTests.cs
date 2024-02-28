@@ -1,6 +1,7 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using System.Runtime.InteropServices;
 using Aspire.Dashboard.Otlp.Model;
 using Aspire.Dashboard.Otlp.Model.MetricValues;
 using Aspire.Dashboard.Otlp.Storage;
@@ -262,7 +263,7 @@ public class MetricsTests
     private static void AssertDimensionValues(Dictionary<ReadOnlyMemory<KeyValuePair<string, string>>, DimensionScope> dimensions, ReadOnlyMemory<KeyValuePair<string, string>> key, int valueCount)
     {
         var scope = dimensions[key];
-        Assert.True(Enumerable.SequenceEqual(key.ToArray(), scope.Attributes), "Key and attributes don't match.");
+        Assert.True(Enumerable.SequenceEqual(MemoryMarshal.ToEnumerable(key), MemoryMarshal.ToEnumerable(scope.Attributes)), "Key and attributes don't match.");
 
         Assert.Equal(valueCount, scope.Values.Count);
     }

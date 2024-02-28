@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 
 namespace Aspire.Dashboard.Otlp.Model;
 
@@ -32,7 +33,7 @@ public class OtlpSpan
     public required OtlpSpanStatusCode Status { get; init; }
     public required string? StatusMessage { get; init; }
     public required string? State { get; init; }
-    public required KeyValuePair<string, string>[] Attributes { get; init; }
+    public required ReadOnlyMemory<KeyValuePair<string, string>> Attributes { get; init; }
     public required List<OtlpSpanEvent> Events { get; init; }
 
     public string ScopeName => Trace.TraceScope.ScopeName;
@@ -85,7 +86,7 @@ public class OtlpSpan
             props.Add("StatusMessage", StatusMessage);
         }
 
-        foreach (var kv in Attributes.OrderBy(a => a.Key))
+        foreach (var kv in MemoryMarshal.ToEnumerable(Attributes).OrderBy(a => a.Key))
         {
             props.TryAdd(kv.Key, kv.Value);
         }

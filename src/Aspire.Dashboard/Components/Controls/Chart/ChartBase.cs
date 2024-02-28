@@ -21,7 +21,7 @@ public abstract class ChartBase : ComponentBase
     private TimeSpan _tickDuration;
     private DateTime _lastUpdateTime;
     private DateTime _currentDataStartTime;
-    private List<KeyValuePair<string, string>[]>? _renderedDimensionAttributes;
+    private List<ReadOnlyMemory<KeyValuePair<string, string>>>? _renderedDimensionAttributes;
     private OtlpInstrumentKey? _renderedInstrument;
     private string? _renderedTheme;
     private bool _renderedShowCount;

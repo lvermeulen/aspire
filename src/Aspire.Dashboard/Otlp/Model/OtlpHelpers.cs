@@ -39,8 +39,7 @@ public static class OtlpHelpers
         return serviceName;
     }
 
-    public static string ToShortenedId(string id) =>
-        id.Length > 7 ? id[..7] : id;
+    public static string ToShortenedId(string id) => TruncateString(id, maxLength: 7);
 
     public static string ToHexString(ReadOnlyMemory<byte> bytes)
     {
@@ -59,6 +58,11 @@ public static class OtlpHelpers
                 ToCharsBuffer(data[pos], chars, pos * 2);
             }
         });
+    }
+
+    public static string TruncateString(string value, int maxLength)
+    {
+        return value.Length > maxLength ? value[..maxLength] : value;
     }
 
     public static string ToHexString(this ByteString bytes)
@@ -101,55 +105,70 @@ public static class OtlpHelpers
         return (long)(nanoseconds / TimeSpan.NanosecondsPerTick);
     }
 
-    public static KeyValuePair<string, string>[] ToKeyValuePairs(this RepeatedField<KeyValue> attributes)
+    public static ReadOnlyMemory<KeyValuePair<string, string>> ToKeyValuePairs(this RepeatedField<KeyValue> attributes, TelemetryOptions options, Func<KeyValue, bool>? filter = null)
     {
         if (attributes.Count == 0)
         {
             return Array.Empty<KeyValuePair<string, string>>();
         }
 
-        var values = new KeyValuePair<string, string>[attributes.Count];
-        CopyKeyValues(attributes, values);
+        var values = new KeyValuePair<string, string>[Math.Min(attributes.Count, options.AttributeCountLimit)];
+        CopyKeyValues(attributes, values, options, filter, out var copyCount);
 
-        return values;
+        return values.AsMemory(0, copyCount);
     }
 
-    public static void CopyKeyValuePairs(RepeatedField<KeyValue> attributes, [NotNull] ref KeyValuePair<string, string>[]? copiedAttributes)
+    public static void CopyKeyValuePairs(RepeatedField<KeyValue> attributes, TelemetryOptions options, out int copyCount, [NotNull] ref Memory<KeyValuePair<string, string>>? copiedAttributes)
     {
-        if (copiedAttributes is null || copiedAttributes.Length < attributes.Count)
+        var readCount = Math.Min(attributes.Count, options.AttributeCountLimit);
+
+        if (copiedAttributes is null || copiedAttributes.Value.Length < readCount)
         {
-            copiedAttributes = new KeyValuePair<string, string>[attributes.Count];
+            copiedAttributes = new KeyValuePair<string, string>[readCount];
         }
         else
         {
-            Array.Clear(copiedAttributes);
+            copiedAttributes.Value.Span.Clear();
         }
 
-        CopyKeyValues(attributes, copiedAttributes);
+        CopyKeyValues(attributes, copiedAttributes.Value, options, filter: null, out copyCount);
     }
 
-    private static void CopyKeyValues(RepeatedField<KeyValue> attributes, KeyValuePair<string, string>[] copiedAttributes)
+    private static void CopyKeyValues(RepeatedField<KeyValue> attributes, Memory<KeyValuePair<string, string>> copiedAttributes, TelemetryOptions options, Func<KeyValue, bool>? filter, out int copyCount)
     {
-        for (var i = 0; i < attributes.Count; i++)
+        var a = copiedAttributes.Span;
+        var readCount = Math.Min(attributes.Count, options.AttributeCountLimit);
+        var currentIndex = 0;
+        for (var i = 0; i < readCount; i++)
         {
-            var keyValue = attributes[i];
-            copiedAttributes[i] = new KeyValuePair<string, string>(keyValue.Key, keyValue.Value.GetString());
-        }
-    }
+            var attribute = attributes[i];
 
-    public static string? GetValue(this KeyValuePair<string, string>[] values, string name)
-    {
-        for (var i = 0; i < values.Length; i++)
-        {
-            if (values[i].Key == name)
+            if (filter != null && !filter(attribute))
             {
-                return values[i].Value;
+                continue;
+            }
+
+            var value = TruncateString(attribute.Value.GetString(), options.AttributeLengthLimit);
+
+            a[currentIndex++] = new KeyValuePair<string, string>(attribute.Key, value);
+        }
+        copyCount = currentIndex;
+    }
+
+    public static string? GetValue(this ReadOnlyMemory<KeyValuePair<string, string>> values, string name)
+    {
+        var v = values.Span;
+        for (var i = 0; i < v.Length; i++)
+        {
+            if (v[i].Key == name)
+            {
+                return v[i].Value;
             }
         }
         return null;
     }
 
-    public static string? GetPeerAddress(this KeyValuePair<string, string>[] values)
+    public static string? GetPeerAddress(this ReadOnlyMemory<KeyValuePair<string, string>> values)
     {
         var address = GetValue(values, OtlpSpan.PeerServiceAttributeKey);
         if (address != null)
@@ -180,11 +199,12 @@ public static class OtlpHelpers
         return null;
     }
 
-    public static bool HasKey(this KeyValuePair<string, string>[] values, string name)
+    public static bool HasKey(this ReadOnlyMemory<KeyValuePair<string, string>> values, string name)
     {
-        for (var i = 0; i < values.Length; i++)
+        var v = values.Span;
+        for (var i = 0; i < v.Length; i++)
         {
-            if (values[i].Key == name)
+            if (v[i].Key == name)
             {
                 return true;
             }
@@ -192,11 +212,11 @@ public static class OtlpHelpers
         return false;
     }
 
-    public static string ConcatProperties(this KeyValuePair<string, string>[] properties)
+    public static string ConcatProperties(this ReadOnlyMemory<KeyValuePair<string, string>> properties)
     {
         StringBuilder sb = new();
         var first = true;
-        foreach (var kv in properties)
+        foreach (var kv in properties.Span)
         {
             if (!first)
             {

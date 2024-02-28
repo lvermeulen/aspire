@@ -7,6 +7,6 @@ public class OtlpSpanEvent
 {
     public required string Name { get; init; }
     public required DateTime Time { get; init; }
-    public required KeyValuePair<string, string>[] Attributes { get; init; }
+    public required ReadOnlyMemory<KeyValuePair<string, string>> Attributes { get; init; }
     public TimeSpan TimeOffset(OtlpSpan span) => (Time - span.StartTime);
 }
