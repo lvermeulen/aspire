@@ -125,7 +125,8 @@ public static class OtlpHelpers
             return Array.Empty<KeyValuePair<string, string>>();
         }
 
-        var values = new List<KeyValuePair<string, string>>(Math.Min(attributes.Count, options.AttributeCountLimit));
+        var readLimit = Math.Min(attributes.Count, options.AttributeCountLimit);
+        var values = new List<KeyValuePair<string, string>>(readLimit);
         for (var i = 0; i < attributes.Count; i++)
         {
             var attribute = attributes[i];
@@ -138,6 +139,11 @@ public static class OtlpHelpers
             var value = TruncateString(attribute.Value.GetString(), options.AttributeLengthLimit);
 
             values.Add(new KeyValuePair<string, string>(attribute.Key, value));
+
+            if (values.Count >= readLimit)
+            {
+                break;
+            }
         }
 
         return values.ToArray();
