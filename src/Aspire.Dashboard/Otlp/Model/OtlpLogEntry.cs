@@ -44,7 +44,7 @@ public class OtlpLogEntry
         Flags = record.Flags;
         Severity = MapSeverity(record.SeverityNumber);
 
-        Message = record.Body.GetString();
+        Message = OtlpHelpers.TruncateString(record.Body.GetString(), options.AttributeLengthLimit);
         OriginalFormat = originalFormat;
         SpanId = record.SpanId.ToHexString();
         TraceId = record.TraceId.ToHexString();
