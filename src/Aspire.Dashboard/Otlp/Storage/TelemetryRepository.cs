@@ -21,6 +21,7 @@ public sealed class TelemetryOptions
     public int MetricsCountLimit { get; init; }
     public int AttributeCountLimit { get; init; }
     public int AttributeLengthLimit { get; init; }
+    public int SpanEventCountLimit { get; init; }
 }
 
 public sealed class TelemetryRepository
@@ -30,9 +31,13 @@ public sealed class TelemetryRepository
     internal const string MetricsCountLimitKey = "DOTNET_DASHBOARD_OTEL_METRIC_COUNT_LIMIT";
     internal const string AttributeCountLimitKey = "DOTNET_DASHBOARD_OTEL_ATTRIBUTE_COUNT_LIMIT";
     internal const string AttributeLengthLimitKey = "DOTNET_DASHBOARD_OTEL_ATTRIBUTE_LENGTH_LIMIT";
+    internal const string SpanEventCountLimitKey = "DOTNET_DASHBOARD_OTEL_SPAN_EVENT_COUNT_LIMIT";
 
-    private const int DefaultMaxTelemetryCount = 10_000;
-    private const int DefaultMaxMetricsCount = 50_000; // Allows for 1 metric point per second for over 12 hours.
+    private const int DefaultTraceCountLimit = 10_000;
+    private const int DefaultMetricsCountLimit = 50_000; // Allows for 1 metric point per second for over 12 hours.
+    private const int DefaultAttributeCountLimit = 128;
+    private const int DefaultAttributeLengthLimit = int.MaxValue;
+    private const int DefaultSpanEventCountLimit = int.MaxValue;
 
     private readonly object _lock = new();
     private readonly ILogger _logger;
@@ -60,11 +65,12 @@ public sealed class TelemetryRepository
 
         _options = new TelemetryOptions
         {
-            LogCountLimit = config.GetValue(LogCountLimitKey, DefaultMaxTelemetryCount),
-            TraceCountLimit = config.GetValue(TraceCountLimitKey, DefaultMaxTelemetryCount),
-            MetricsCountLimit = config.GetValue(MetricsCountLimitKey, DefaultMaxMetricsCount),
-            AttributeCountLimit = config.GetValue(AttributeCountLimitKey, 128),
-            AttributeLengthLimit = config.GetValue(AttributeLengthLimitKey, int.MaxValue),
+            LogCountLimit = config.GetValue(LogCountLimitKey, DefaultTraceCountLimit),
+            TraceCountLimit = config.GetValue(TraceCountLimitKey, DefaultTraceCountLimit),
+            MetricsCountLimit = config.GetValue(MetricsCountLimitKey, DefaultMetricsCountLimit),
+            AttributeCountLimit = config.GetValue(AttributeCountLimitKey, DefaultAttributeCountLimit),
+            AttributeLengthLimit = config.GetValue(AttributeLengthLimitKey, DefaultAttributeLengthLimit),
+            SpanEventCountLimit = config.GetValue(SpanEventCountLimitKey, DefaultSpanEventCountLimit),
         };
 
         _logs = new(_options.LogCountLimit);
@@ -733,6 +739,11 @@ public sealed class TelemetryRepository
                 Time = OtlpHelpers.UnixNanoSecondsToDateTime(e.TimeUnixNano),
                 Attributes = e.Attributes.ToKeyValuePairs(options)
             });
+
+            if (events.Count >= options.SpanEventCountLimit)
+            {
+                break;
+            }
         }
 
         var newSpan = new OtlpSpan(application, trace)

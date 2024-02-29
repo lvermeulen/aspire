@@ -396,16 +396,22 @@ public class TraceTests
     }
 
     [Fact]
-    public void AddTraces_AttributeLimits_LimitsApplied()
+    public void AddTraces_AttributeAndEventLimits_LimitsApplied()
     {
         // Arrange
-        var repository = CreateRepository(attributeCountLimit: 5, attributeLengthLimit: 16);
+        var repository = CreateRepository(attributeCountLimit: 5, attributeLengthLimit: 16, spanEventCountLimit: 5);
 
         var attributes = new List<KeyValuePair<string, string>>();
         for (var i = 0; i < 10; i++)
         {
             var value = GetValue((i + 1) * 5);
             attributes.Add(new KeyValuePair<string, string>($"Key{i}", value));
+        }
+
+        var events = new List<Span.Types.Event>();
+        for (var i = 0; i < 10; i++)
+        {
+            events.Add(CreateSpanEvent($"Event {i}", i, attributes));
         }
 
         // Act
@@ -422,7 +428,7 @@ public class TraceTests
                         Scope = CreateScope(),
                         Spans =
                         {
-                            CreateSpan(traceId: "1", spanId: "1-1", startTime: s_testTime.AddMinutes(1), endTime: s_testTime.AddMinutes(10), attributes: attributes)
+                            CreateSpan(traceId: "1", spanId: "1-1", startTime: s_testTime.AddMinutes(1), endTime: s_testTime.AddMinutes(10), attributes: attributes, events: events)
                         }
                     }
                 }
@@ -478,5 +484,8 @@ public class TraceTests
                 Assert.Equal("Key4", p.Key);
                 Assert.Equal("0123456789012345", p.Value);
             });
+
+        Assert.Equal(5, trace.FirstSpan.Events.Count);
+        Assert.Equal(5, trace.FirstSpan.Events[0].Attributes.Length);
     }
 }

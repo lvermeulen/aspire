@@ -111,6 +111,24 @@ internal static class TestHelpers
         return point;
     }
 
+    public static Span.Types.Event CreateSpanEvent(string name, int startTime, IEnumerable<KeyValuePair<string, string>>? attributes = null)
+    {
+        var e = new Span.Types.Event
+        {
+            Name = name,
+            TimeUnixNano = (ulong)startTime
+        };
+        if (attributes != null)
+        {
+            foreach (var attribute in attributes)
+            {
+                e.Attributes.Add(new KeyValue { Key = attribute.Key, Value = new AnyValue { StringValue = attribute.Value } });
+            }
+        }
+
+        return e;
+    }
+
     public static Span CreateSpan(string traceId, string spanId, DateTime startTime, DateTime endTime, string? parentSpanId = null, List<Span.Types.Event>? events = null, IEnumerable<KeyValuePair<string, string>>? attributes = null)
     {
         var span = new Span
@@ -170,7 +188,11 @@ internal static class TestHelpers
         };
     }
 
-    public static TelemetryRepository CreateRepository(int? metricsCountLimit = null, int? attributeCountLimit = null, int? attributeLengthLimit = null)
+    public static TelemetryRepository CreateRepository(
+        int? metricsCountLimit = null,
+        int? attributeCountLimit = null,
+        int? attributeLengthLimit = null,
+        int? spanEventCountLimit = null)
     {
         var inMemorySettings = new Dictionary<string, string?>();
         if (metricsCountLimit != null)
@@ -184,6 +206,10 @@ internal static class TestHelpers
         if (attributeLengthLimit != null)
         {
             inMemorySettings[TelemetryRepository.AttributeLengthLimitKey] = attributeLengthLimit.Value.ToString(CultureInfo.InvariantCulture);
+        }
+        if (spanEventCountLimit != null)
+        {
+            inMemorySettings[TelemetryRepository.SpanEventCountLimitKey] = spanEventCountLimit.Value.ToString(CultureInfo.InvariantCulture);
         }
 
         var configuration = new ConfigurationBuilder()
