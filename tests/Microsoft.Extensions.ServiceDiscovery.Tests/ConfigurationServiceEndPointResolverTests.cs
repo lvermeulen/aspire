@@ -22,7 +22,7 @@ public class ConfigurationServiceEndPointResolverTests
     {
         var config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
         {
-            ["services:basket"] = "localhost:8080",
+            ["services:basket:default"] = "localhost:8080",
         });
         var services = new ServiceCollection()
             .AddSingleton<IConfiguration>(config.Build())
@@ -59,8 +59,8 @@ public class ConfigurationServiceEndPointResolverTests
         {
             InitialData = new Dictionary<string, string?>
             {
-                ["services:basket:0"] = "http://localhost:8080",
-                ["services:basket:1"] = "http://remotehost:9090",
+                ["services:basket:default:0"] = "http://localhost:8080",
+                ["services:basket:default:1"] = "http://remotehost:9090",
             }
         };
         var config = new ConfigurationBuilder().Add(configSource);
@@ -82,8 +82,8 @@ public class ConfigurationServiceEndPointResolverTests
             Assert.True(initialResult.ResolvedSuccessfully);
             Assert.Equal(ResolutionStatus.Success, initialResult.Status);
             Assert.Equal(2, initialResult.EndPoints.Count);
-            Assert.Equal(new DnsEndPoint("localhost", 8080), initialResult.EndPoints[0].EndPoint);
-            Assert.Equal(new DnsEndPoint("remotehost", 9090), initialResult.EndPoints[1].EndPoint);
+            Assert.Equal(new UriEndPoint(new Uri("http://localhost:8080")), initialResult.EndPoints[0].EndPoint);
+            Assert.Equal(new UriEndPoint(new Uri("http://remotehost:9090")), initialResult.EndPoints[1].EndPoint);
 
             Assert.All(initialResult.EndPoints, ep =>
             {
@@ -101,10 +101,11 @@ public class ConfigurationServiceEndPointResolverTests
         {
             InitialData = new Dictionary<string, string?>
             {
-                ["services:basket:0"] = "http://localhost:8080",
-                ["services:basket:1"] = "http://remotehost:9090",
-                ["services:basket:2"] = "http://_grpc.localhost:2222",
-                ["services:basket:3"] = "grpc://remotehost:2222",
+                ["services:basket:default:0"] = "http://localhost:8080",
+                ["services:basket:default:1"] = "remotehost:9090",
+                ["services:basket:grpc:0"] = "localhost:2222",
+                ["services:basket:grpc:1"] = "127.0.0.1:3333",
+                ["services:basket:grpc:2"] = "http://remotehost:4444",
             }
         };
         var config = new ConfigurationBuilder().Add(configSource);
@@ -125,9 +126,10 @@ public class ConfigurationServiceEndPointResolverTests
             Assert.NotNull(initialResult);
             Assert.True(initialResult.ResolvedSuccessfully);
             Assert.Equal(ResolutionStatus.Success, initialResult.Status);
-            Assert.Equal(2, initialResult.EndPoints.Count);
+            Assert.Equal(3, initialResult.EndPoints.Count);
             Assert.Equal(new DnsEndPoint("localhost", 2222), initialResult.EndPoints[0].EndPoint);
-            Assert.Equal(new DnsEndPoint("remotehost", 2222), initialResult.EndPoints[1].EndPoint);
+            Assert.Equal(new IPEndPoint(IPAddress.Loopback, 3333), initialResult.EndPoints[1].EndPoint);
+            Assert.Equal(new UriEndPoint(new Uri("http://remotehost:4444")), initialResult.EndPoints[2].EndPoint);
 
             Assert.All(initialResult.EndPoints, ep =>
             {

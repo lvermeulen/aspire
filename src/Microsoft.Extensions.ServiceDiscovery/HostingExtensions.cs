@@ -4,6 +4,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 using Microsoft.Extensions.ServiceDiscovery;
 using Microsoft.Extensions.ServiceDiscovery.Abstractions;
 using Microsoft.Extensions.ServiceDiscovery.PassThrough;
@@ -63,6 +64,7 @@ public static class HostingExtensions
     {
         services.AddServiceDiscoveryCore();
         services.AddSingleton<IServiceEndPointResolverProvider, ConfigurationServiceEndPointResolverProvider>();
+        services.AddTransient<IValidateOptions<ConfigurationServiceEndPointResolverOptions>, ConfigurationServiceEndPointResolverOptionsValidator>();
         if (configureOptions is not null)
         {
             services.Configure(configureOptions);

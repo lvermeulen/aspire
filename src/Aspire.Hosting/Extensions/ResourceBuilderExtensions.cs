@@ -174,17 +174,12 @@ public static class ResourceBuilderExtensions
             var replaceLocalhostWithContainerHost = builder.Resource is ContainerResource;
             var configuration = builder.ApplicationBuilder.Configuration;
 
-            var i = 0;
-            foreach (var allocatedEndPoint in allocatedEndPoints)
+            foreach (var allocatedEndPointGroup in allocatedEndPoints.GroupBy(a => a.Name))
             {
-                var endpointNameQualifiedUriStringKey = $"services__{name}__{i++}";
-                context.EnvironmentVariables[endpointNameQualifiedUriStringKey] = replaceLocalhostWithContainerHost
-                    ? HostNameResolver.ReplaceLocalhostWithContainerHost(allocatedEndPoint.EndpointNameQualifiedUriString, configuration)
-                    : allocatedEndPoint.EndpointNameQualifiedUriString;
-
-                if (!containsAmbiguousEndpoints)
+                var i = 0;
+                foreach (var allocatedEndPoint in allocatedEndPointGroup)
                 {
-                    var uriStringKey = $"services__{name}__{i++}";
+                    var uriStringKey = $"services__{name}__{allocatedEndPoint.Name}__{i++}";
                     context.EnvironmentVariables[uriStringKey] = replaceLocalhostWithContainerHost
                         ? HostNameResolver.ReplaceLocalhostWithContainerHost(allocatedEndPoint.UriString, configuration)
                         : allocatedEndPoint.UriString;
@@ -252,7 +247,7 @@ public static class ResourceBuilderExtensions
 
     /// <summary>
     /// Injects service discovery information as environment variables from the project resource into the destination resource, using the source resource's name as the service name.
-    /// Each endpoint defined on the project resource will be injected using the format "services__{sourceResourceName}__{endpointIndex}={endpointNameQualifiedUriString}."
+    /// Each endpoint defined on the project resource will be injected using the format "services__{sourceResourceName}__{endpointName}__{endpointIndex}={uriString}."
     /// </summary>
     /// <typeparam name="TDestination">The destination resource.</typeparam>
     /// <param name="builder">The resource where the service discovery information will be injected.</param>

@@ -27,20 +27,20 @@ internal readonly struct ServiceNameParts : IEquatable<ServiceNameParts>
     {
         if (serviceName.IndexOf("://") < 0 && Uri.TryCreate($"fakescheme://{serviceName}", default, out var uri))
         {
-            parts = Create(uri, hasScheme: false);
+            parts = Create(uri);
             return true;
         }
 
         if (Uri.TryCreate(serviceName, default, out uri))
         {
-            parts = Create(uri, hasScheme: true);
+            parts = Create(uri);
             return true;
         }
 
         parts = default;
         return false;
 
-        static ServiceNameParts Create(Uri uri, bool hasScheme)
+        static ServiceNameParts Create(Uri uri)
         {
             var uriHost = uri.Host;
             var segmentSeparatorIndex = uriHost.IndexOf('.');
@@ -57,10 +57,6 @@ internal readonly struct ServiceNameParts : IEquatable<ServiceNameParts>
             else
             {
                 host = uriHost;
-                if (hasScheme)
-                {
-                    endPointName = uri.Scheme;
-                }
             }
 
             return new(host, endPointName, port);

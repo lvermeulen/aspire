@@ -12,7 +12,7 @@ internal sealed partial class ConfigurationServiceEndPointResolver
 {
     private sealed partial class Log
     {
-        [LoggerMessage(1, LogLevel.Debug, "Skipping endpoint resolution for service '{ServiceName}': '{Reason}'.", EventName = "SkippedResolution")]  
+        [LoggerMessage(1, LogLevel.Debug, "Skipping endpoint resolution for service '{ServiceName}': '{Reason}'.", EventName = "SkippedResolution")]
         public static partial void SkippedResolution(ILogger logger, string serviceName, string reason);
 
         [LoggerMessage(2, LogLevel.Debug, "Matching endpoints using endpoint names for service '{ServiceName}' since endpoint names are specified in configuration.", EventName = "MatchingEndPointNames")]
@@ -38,8 +38,8 @@ internal sealed partial class ConfigurationServiceEndPointResolver
             }
         }
 
-        [LoggerMessage(4, LogLevel.Debug, "Using configuration from path '{Path}' to resolve endpoints for service '{ServiceName}'.", EventName = "UsingConfigurationPath")]
-        public static partial void UsingConfigurationPath(ILogger logger, string path, string serviceName);
+        [LoggerMessage(4, LogLevel.Debug, "Using configuration from path '{Path}' to resolve endpoint '{EndpointName}' for service '{ServiceName}'.", EventName = "UsingConfigurationPath")]
+        public static partial void UsingConfigurationPath(ILogger logger, string path, string endpointName, string serviceName);
 
         [LoggerMessage(5, LogLevel.Debug, "No endpoints configured for service '{ServiceName}' from path '{Path}'.", EventName = "ConfigurationNotFound")]
         internal static partial void ConfigurationNotFound(ILogger logger, string serviceName, string path);
