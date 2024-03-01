@@ -3,14 +3,11 @@
 
 var builder = DistributedApplication.CreateBuilder(args);
 
-var db1 = builder.AddSqlServer("sql1").AddDatabase("db1");
-
-builder.AddProject<Projects.Stress_ApiService>("api")
-    .WithReplicas(100)
-    .WithReference(db1);
-
-builder.AddProject<Projects.Stress_MigrationService>("migration")
-       .WithReference(db1);
+for (var i = 0; i < 200; i++)
+{
+    builder.AddTestResource($"test-{i}");
+}
+builder.AddTestResource($"test-live", liveUpdates: true);
 
 // This project is only added in playground projects to support development/debugging
 // of the dashboard. It is not required in end developer code. Comment out this code
