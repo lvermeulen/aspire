@@ -13,7 +13,7 @@ public class WithReferenceTests
     {
         using var testProgram = CreateTestProgram();
 
-        // Create a binding and its metching annotation (simulating DCP behavior)
+        // Create a binding and its matching annotation (simulating DCP behavior)
         testProgram.ServiceABuilder.WithHttpsEndpoint(1000, 2000, "mybinding");
         testProgram.ServiceABuilder.WithAnnotation(
             new AllocatedEndpointAnnotation("mybinding",
@@ -40,9 +40,8 @@ public class WithReferenceTests
         }
 
         var servicesKeysCount = config.Keys.Count(k => k.StartsWith("services__"));
-        Assert.Equal(2, servicesKeysCount);
-        Assert.Contains(config, kvp => kvp.Key == "services__servicea__0" && kvp.Value == "mybinding://localhost:2000");
-        Assert.Contains(config, kvp => kvp.Key == "services__servicea__1" && kvp.Value == "https://localhost:2000");
+        Assert.Equal(1, servicesKeysCount);
+        Assert.Contains(config, kvp => kvp.Key == "services__servicea__mybinding__0" && kvp.Value == "https://localhost:2000");
     }
 
     [Fact]
@@ -91,8 +90,8 @@ public class WithReferenceTests
 
         var servicesKeysCount = config.Keys.Count(k => k.StartsWith("services__"));
         Assert.Equal(2, servicesKeysCount);
-        Assert.Contains(config, kvp => kvp.Key == "services__servicea__0" && kvp.Value == "mybinding://localhost:2000");
-        Assert.Contains(config, kvp => kvp.Key == "services__servicea__1" && kvp.Value == "myconflictingbinding://localhost:3000");
+        Assert.Contains(config, kvp => kvp.Key == "services__servicea__mybinding__0" && kvp.Value == "https://localhost:2000");
+        Assert.Contains(config, kvp => kvp.Key == "services__servicea__myconflictingbinding__0" && kvp.Value == "https://localhost:3000");
     }
 
     [Fact]
@@ -140,11 +139,9 @@ public class WithReferenceTests
         }
 
         var servicesKeysCount = config.Keys.Count(k => k.StartsWith("services__"));
-        Assert.Equal(4, servicesKeysCount);
-        Assert.Contains(config, kvp => kvp.Key == "services__servicea__0" && kvp.Value == "mybinding://localhost:2000");
-        Assert.Contains(config, kvp => kvp.Key == "services__servicea__1" && kvp.Value == "https://localhost:2000");
-        Assert.Contains(config, kvp => kvp.Key == "services__servicea__2" && kvp.Value == "mynonconflictingbinding://localhost:3000");
-        Assert.Contains(config, kvp => kvp.Key == "services__servicea__3" && kvp.Value == "http://localhost:3000");
+        Assert.Equal(2, servicesKeysCount);
+        Assert.Contains(config, kvp => kvp.Key == "services__servicea__mybinding__0" && kvp.Value == "https://localhost:2000");
+        Assert.Contains(config, kvp => kvp.Key == "services__servicea__mynonconflictingbinding__0" && kvp.Value == "http://localhost:3000");
     }
 
     [Fact]
@@ -189,8 +186,8 @@ public class WithReferenceTests
 
         var servicesKeysCount = config.Keys.Count(k => k.StartsWith("services__"));
         Assert.Equal(2, servicesKeysCount);
-        Assert.Contains(config, kvp => kvp.Key == "services__servicea__0" && kvp.Value == "mybinding://localhost:2000");
-        Assert.Contains(config, kvp => kvp.Key == "services__servicea__1" && kvp.Value == "mybinding2://localhost:3000");
+        Assert.Contains(config, kvp => kvp.Key == "services__servicea__mybinding__0" && kvp.Value == "https://localhost:2000");
+        Assert.Contains(config, kvp => kvp.Key == "services__servicea__mybinding2__0" && kvp.Value == "https://localhost:3000");
     }
 
     [Fact]
@@ -234,11 +231,9 @@ public class WithReferenceTests
         }
 
         var servicesKeysCount = config.Keys.Count(k => k.StartsWith("services__"));
-        Assert.Equal(4, servicesKeysCount);
-        Assert.Contains(config, kvp => kvp.Key == "services__servicea__0" && kvp.Value == "mybinding://localhost:2000");
-        Assert.Contains(config, kvp => kvp.Key == "services__servicea__1" && kvp.Value == "https://localhost:2000");
-        Assert.Contains(config, kvp => kvp.Key == "services__servicea__2" && kvp.Value == "mybinding2://localhost:3000");
-        Assert.Contains(config, kvp => kvp.Key == "services__servicea__3" && kvp.Value == "http://localhost:3000");
+        Assert.Equal(2, servicesKeysCount);
+        Assert.Contains(config, kvp => kvp.Key == "services__servicea__mybinding__0" && kvp.Value == "https://localhost:2000");
+        Assert.Contains(config, kvp => kvp.Key == "services__servicea__mybinding2__0" && kvp.Value == "http://localhost:3000");
     }
 
     [Fact]

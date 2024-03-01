@@ -247,7 +247,7 @@ public sealed class ManifestPublishingContext(DistributedApplicationExecutionCon
                     {
                         // HACK: For November we are only going to support a single endpoint annotation
                         //       per URI scheme per service reference.
-                        var binding = endpointAnnotation.Single();
+                        //var binding = endpointAnnotation.Single();
 
                         Writer.WriteString($"services__{endpointReferenceAnnotation.Resource.Name}__{endpointAnnotation.Name}__{i++}", $"{{{endpointReferenceAnnotation.Resource.Name}.bindings.{endpointAnnotation.Name}.url}}");
                     }
