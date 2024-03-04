@@ -9,6 +9,9 @@ using OpenTelemetry.Proto.Resource.V1;
 
 namespace Stress.ApiService;
 
+/// <summary>
+/// Send OTLP directly to the dashboard instead of going via opentelemetry-dotnet SDK to send raw and unlimited data.
+/// </summary>
 public class TelemetryStresser(ILogger<TelemetryStresser> logger, IConfiguration config) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
@@ -48,9 +51,9 @@ public class TelemetryStresser(ILogger<TelemetryStresser> logger, IConfiguration
                 }
             };
 
-            logger.LogInformation("Exporting metrics");
+            logger.LogDebug("Exporting metrics");
             var response = await client.ExportAsync(request, cancellationToken: cancellationToken);
-            logger.LogInformation($"Export complete. Rejected count: {response.PartialSuccess?.RejectedDataPoints ?? 0}");
+            logger.LogDebug($"Export complete. Rejected count: {response.PartialSuccess?.RejectedDataPoints ?? 0}");
 
             await Task.Delay(TimeSpan.FromSeconds(1), cancellationToken);
         }
