@@ -3,11 +3,12 @@
 
 var builder = DistributedApplication.CreateBuilder(args);
 
-for (var i = 0; i < 200; i++)
+for (var i = 0; i < 5; i++)
 {
     builder.AddTestResource($"test-{i}");
 }
-builder.AddTestResource($"test-live", liveUpdates: true);
+
+builder.AddProject<Projects.Stress_TelemetryService>("stress-telemetryservice");
 
 // This project is only added in playground projects to support development/debugging
 // of the dashboard. It is not required in end developer code. Comment out this code

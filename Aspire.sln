@@ -312,6 +312,7 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CdkSample.AppHost", "playground\cdk\CdkSample.AppHost\CdkSample.AppHost.csproj", "{A357411A-5909-4A49-9519-12A935F84395}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CdkSample.ApiService", "playground\cdk\CdkSample.ApiService\CdkSample.ApiService.csproj", "{4601F5A2-E445-41B2-9C1F-2CE016642E62}"
+EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CustomResources", "CustomResources", "{867A00A7-AF8E-4396-9583-982FBB31762C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CustomResources.AppHost", "playground\CustomResources\CustomResources.AppHost\CustomResources.AppHost.csproj", "{4231B6F1-1110-4992-A727-8F1176A47440}"
@@ -320,11 +321,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Stress", "Stress", "{CFDA7A
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stress.AppHost", "playground\Stress\Stress.AppHost\Stress.AppHost.csproj", "{A74C1916-231A-410A-B718-A0E7BDB1DD7F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stress.ApiModel", "playground\Stress\Stress.ApiModel\Stress.ApiModel.csproj", "{F96B4F9A-278E-48B4-A4FF-2569F9023445}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stress.ApiService", "playground\Stress\Stress.ApiService\Stress.ApiService.csproj", "{B54B844E-8EF0-416A-ACA5-9F65ACFED580}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stress.MigrationService", "playground\Stress\Stress.MigrationService\Stress.MigrationService.csproj", "{9114FFB4-328C-43FC-B2E4-EB6A16659113}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stress.TelemetryService", "playground\Stress\Stress.TelemetryService\Stress.TelemetryService.csproj", "{9114FFB4-328C-43FC-B2E4-EB6A16659113}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -836,14 +833,6 @@ Global
 		{A74C1916-231A-410A-B718-A0E7BDB1DD7F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A74C1916-231A-410A-B718-A0E7BDB1DD7F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A74C1916-231A-410A-B718-A0E7BDB1DD7F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F96B4F9A-278E-48B4-A4FF-2569F9023445}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F96B4F9A-278E-48B4-A4FF-2569F9023445}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F96B4F9A-278E-48B4-A4FF-2569F9023445}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F96B4F9A-278E-48B4-A4FF-2569F9023445}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B54B844E-8EF0-416A-ACA5-9F65ACFED580}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B54B844E-8EF0-416A-ACA5-9F65ACFED580}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B54B844E-8EF0-416A-ACA5-9F65ACFED580}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B54B844E-8EF0-416A-ACA5-9F65ACFED580}.Release|Any CPU.Build.0 = Release|Any CPU
 		{9114FFB4-328C-43FC-B2E4-EB6A16659113}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{9114FFB4-328C-43FC-B2E4-EB6A16659113}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9114FFB4-328C-43FC-B2E4-EB6A16659113}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -1001,8 +990,6 @@ Global
 		{4231B6F1-1110-4992-A727-8F1176A47440} = {867A00A7-AF8E-4396-9583-982FBB31762C}
 		{CFDA7AC5-251C-43C7-B334-71AE8040A147} = {D173887B-AF42-4576-B9C1-96B9E9B3D9C0}
 		{A74C1916-231A-410A-B718-A0E7BDB1DD7F} = {CFDA7AC5-251C-43C7-B334-71AE8040A147}
-		{F96B4F9A-278E-48B4-A4FF-2569F9023445} = {CFDA7AC5-251C-43C7-B334-71AE8040A147}
-		{B54B844E-8EF0-416A-ACA5-9F65ACFED580} = {CFDA7AC5-251C-43C7-B334-71AE8040A147}
 		{9114FFB4-328C-43FC-B2E4-EB6A16659113} = {CFDA7AC5-251C-43C7-B334-71AE8040A147}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
